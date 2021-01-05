@@ -9,14 +9,12 @@ export function createElement(tag, props) {
     if (props) {
         Object.keys(props).forEach((name) => el[name] = props[name]);
     }
-    document.body.appendChild(el);
-    elements.push(el);
+    elements.push(document.body.appendChild(el));
     return el;
 }
 
 export function appendStyle(style) {
-    document.head.appendChild(style);
-    elements.push(style);
+    elements.push(document.head.appendChild(style));
     return style;
 }
 
