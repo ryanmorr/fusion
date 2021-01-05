@@ -1,4 +1,5 @@
 import { css } from '../../src/fusion';
+import { createElement, appendStyle, getStyle } from '../setup';
 
 describe('css', () => {
     it('should create a style element', () => {
@@ -11,15 +12,13 @@ describe('css', () => {
         expect(style.nodeType).to.equal(1);
         expect(style.nodeName).to.equal('STYLE');
         expect(document.contains(style)).to.equal(false);
-        
-        const foo = document.createElement('div');
-        foo.className = 'foo';
-        document.body.appendChild(foo);
+
         document.head.appendChild(style);
+        
+        const element = createElement('div', {className: 'foo'});
+        
+        expect(getStyle(element, 'width')).to.equal('72px');
 
-        expect(window.getComputedStyle(foo).getPropertyValue('width')).to.equal('72px');
-
-        foo.remove();
         style.remove();
     });
 
@@ -27,22 +26,16 @@ describe('css', () => {
         const width = 45;
         const height = 31;
 
-        const style = css`
+        appendStyle(css`
             .foo {
                 width: ${width}px;
                 height: ${height}px;
             }
-        `;
+        `);
         
-        const foo = document.createElement('div');
-        foo.className = 'foo';
-        document.body.appendChild(foo);
-        document.head.appendChild(style);
+        const element = createElement('div', {className: 'foo'});
 
-        expect(window.getComputedStyle(foo).getPropertyValue('width')).to.equal('45px');
-        expect(window.getComputedStyle(foo).getPropertyValue('height')).to.equal('31px');
-
-        foo.remove();
-        style.remove();
+        expect(getStyle(element, 'width')).to.equal('45px');
+        expect(getStyle(element, 'height')).to.equal('31px');
     });
 });
