@@ -33,4 +33,23 @@ describe('bindings', () => {
 
         expect(getStyle(element, 'width')).to.equal('58px');
     });
+
+    it('should support promises', (done) => {
+        const width = new Promise((resolve) => {
+            setTimeout(() => resolve('103px'), 1000);
+        });
+
+        appendStyle(css`
+            .foo {
+                width: ${width};
+            }
+        `);
+        
+        const element = createElement('div', {className: 'foo'});
+        
+        width.then(() => {
+            expect(getStyle(element, 'width')).to.equal('103px');
+            done();
+        });
+    });
 });
