@@ -1,20 +1,27 @@
 import { uuid, isStore, isPromise } from './util';
 
-const CSS_VAR = Symbol('css-var');
-const docElement = document.documentElement;
+const CSS = Symbol('css');
+const docStyle = document.documentElement.style;
 
-function getCSSVar(obj) {
-    if (CSS_VAR in obj) {
-        return obj[CSS_VAR];
+function getProp(obj) {
+    if (CSS in obj) {
+        return obj[CSS];
     }
     const prop = `--${uuid()}`;
-    obj[isStore(obj) ? 'subscribe' : 'then']((value) => docElement.style.setProperty(prop, value));    
-    return obj[CSS_VAR] = prop;
+    obj[isStore(obj) ? 'subscribe' : 'then']((value) => {
+        const currentValue = docStyle.getPropertyValue(prop);
+        if (currentValue !== '' && value == null) {
+            docStyle.removeProperty(prop);
+        } else if (value != null) {
+            docStyle.setProperty(prop, value);
+        }
+    });
+    return obj[CSS] = prop;
 }
 
 function resolveValue(value) {
     if (isStore(value) || isPromise(value)) {
-        return `var(${getCSSVar(value)})`;
+        return `var(${getProp(value)})`;
     }
     return value;
 }
