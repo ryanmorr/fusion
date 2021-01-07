@@ -1,4 +1,4 @@
-import { val, css } from '../../src/fusion';
+import { val, derived, css } from '../../src/fusion';
 import { createElement, appendStyle, getStyle } from '../setup';
 
 describe('bindings', () => {
@@ -57,6 +57,28 @@ describe('bindings', () => {
 
         expect(getStyle(element1, 'width')).to.equal('58px');
         expect(getStyle(element2, 'width')).to.equal('58px');
+    });
+
+    it('should support derived stores', () => {
+        const x = val(5);
+        const y = val(10);
+        const width = derived(x, y, (xVal, yVal) => `${xVal * yVal}px`);
+
+        appendStyle(css`
+            .foo {
+                width: ${width};
+            }
+        `);
+        
+        const element = createElement('div', {className: 'foo'});
+        
+        expect(getStyle(element, 'width')).to.equal('50px');
+
+        x.set(6);
+        expect(getStyle(element, 'width')).to.equal('60px');
+
+        y.set(8);
+        expect(getStyle(element, 'width')).to.equal('48px');
     });
 
     it('should support promises', (done) => {
