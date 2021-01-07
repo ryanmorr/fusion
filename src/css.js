@@ -3,7 +3,14 @@ import { uuid, isStore, isPromise } from './util';
 const CSS = Symbol('css');
 const docStyle = document.documentElement.style;
 
-function getProp(obj) {
+function resolveValue(value) {
+    if (isStore(value) || isPromise(value)) {
+        return `var(${getProp(value)})`;
+    }
+    return value;
+}
+
+export function getProp(obj) {
     if (CSS in obj) {
         return obj[CSS];
     }
@@ -17,13 +24,6 @@ function getProp(obj) {
         }
     });
     return obj[CSS] = prop;
-}
-
-function resolveValue(value) {
-    if (isStore(value) || isPromise(value)) {
-        return `var(${getProp(value)})`;
-    }
-    return value;
 }
 
 export function css(strings, ...values) {
