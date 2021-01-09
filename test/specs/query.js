@@ -1,5 +1,5 @@
 import { query, css } from '../../src/fusion';
-import { createElement, appendStyle, getStyle } from '../setup';
+import { createElement, appendStyle, getStyle, wait } from '../setup';
 
 describe('query', () => {
     it('should query for elements', () => {
@@ -26,7 +26,7 @@ describe('query', () => {
         const element3 = createElement('div', {className: 'foo'});
         const element4 = createElement('div', {className: 'foo'});
 
-        setTimeout(() => {
+        wait(() => {
             expect(spy.callCount).to.equal(2);
             expect(spy.args[1][0]).to.deep.equal([element1, element2, element3, element4]);
             expect(spy.args[1][1]).to.deep.equal([element1]);
@@ -38,7 +38,7 @@ describe('query', () => {
             element4.remove();
             const element5 = createElement('div', {className: 'foo'});
 
-            setTimeout(() => {
+            wait(() => {
                 expect(spy.callCount).to.equal(3);
                 expect(spy.args[2][0]).to.deep.equal([element1, element3, element5]);
                 expect(spy.args[2][1]).to.deep.equal([element1, element2, element3, element4]);
@@ -47,8 +47,8 @@ describe('query', () => {
                 expect(elements.get()).to.deep.equal([element1, element3, element5]);
     
                 done();
-            }, 500);
-        }, 500);
+            });
+        });
     });
 
     it('should interpolate a query store into a CSS stylesheet', () => {

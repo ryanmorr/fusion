@@ -1,5 +1,5 @@
 import { media, css } from '../../src/fusion';
-import { getStyle } from '../setup';
+import { getStyle, wait } from '../setup';
 
 describe('media', () => {
     let iframe;
@@ -21,20 +21,12 @@ describe('media', () => {
         return iframe.clientWidth;
     }
 
-    it('should store a boolean based on a media query', (done) => {
+    it('should store a boolean based on a media query', () => {
         setWidth(800);
 
         const mq = media('(max-width: 750px)');
 
         expect(mq.get()).to.equal(false);
-
-        setWidth(700);
-
-        setTimeout(() => {
-            expect(mq.get()).to.equal(true);
-
-            done();
-        }, 100);
     });
 
     it('should call subscribes when the status of the media query changes', (done) => {
@@ -50,12 +42,19 @@ describe('media', () => {
 
         setWidth(700);
 
-        setTimeout(() => {
+        wait(() => {
             expect(spy.callCount).to.equal(2);
             expect(spy.args[1][0]).to.equal(true);
 
-            done();
-        }, 100);
+            setWidth(900);
+
+            wait(() => {
+                expect(spy.callCount).to.equal(3);
+                expect(spy.args[2][0]).to.equal(false);
+
+                done();
+            });
+        });
     });
 
     it('should interpolate a media store into a CSS stylesheet', (done) => {
@@ -83,10 +82,10 @@ describe('media', () => {
 
         setWidth(700);
 
-        setTimeout(() => {
+        wait(() => {
             expect(getStyle(element, 'width')).to.equal('20px');
 
             done();
-        }, 100);
+        });
     });
 });

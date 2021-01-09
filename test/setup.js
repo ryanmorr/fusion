@@ -1,7 +1,7 @@
 const elements = [];
 
 export function getStyle(el, prop) {
-    return getComputedStyle(el).getPropertyValue(prop);
+    return el.ownerDocument.defaultView.getComputedStyle(el).getPropertyValue(prop);
 }
 
 export function createElement(tag, props) {
@@ -16,6 +16,10 @@ export function createElement(tag, props) {
 export function appendStyle(style) {
     elements.push(document.head.appendChild(style));
     return style;
+}
+
+export function wait(callback) {
+    setTimeout(callback, 500);
 }
 
 afterEach(() => elements.forEach((el) => el.remove()));
