@@ -1,4 +1,5 @@
 import createStore from '@ryanmorr/create-store';
+import { TYPE } from './constants';
 
 export const val = createStore((get, set) => (value) => {
     set(value);
@@ -6,6 +7,7 @@ export const val = createStore((get, set) => (value) => {
         set(val, get());
     };
     return {
+        [TYPE]: 'val',
         get,
         set: setValue,
         update(callback) {

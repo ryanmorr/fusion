@@ -1,13 +1,30 @@
+import { TYPE, CSS } from './constants';
 import { uuid, isStore, isPromise } from './util';
 
-const CSS = Symbol('css');
 const docStyle = document.documentElement.style;
 
 function resolveValue(value) {
-    if (isStore(value) || isPromise(value)) {
+    if (isStore(value)) {
+        if (value[TYPE] === 'val' || value[TYPE] === 'derived') {
+            return `var(${getProp(value)})`;
+        }
+        if (value[TYPE] === 'media') {
+            return `@media ${value[CSS]}`;
+        }
+    }
+    if (isPromise(value)) {
         return `var(${getProp(value)})`;
     }
     return value;
+}
+
+function setProp(prop, value) {
+    const currentValue = docStyle.getPropertyValue(prop);
+    if (currentValue !== '' && value == null) {
+        docStyle.removeProperty(prop);
+    } else if (value != null) {
+        docStyle.setProperty(prop, value);
+    }
 }
 
 export function getProp(obj) {
@@ -15,14 +32,11 @@ export function getProp(obj) {
         return obj[CSS];
     }
     const prop = `--${uuid()}`;
-    obj[isStore(obj) ? 'subscribe' : 'then']((value) => {
-        const currentValue = docStyle.getPropertyValue(prop);
-        if (currentValue !== '' && value == null) {
-            docStyle.removeProperty(prop);
-        } else if (value != null) {
-            docStyle.setProperty(prop, value);
-        }
-    });
+    if (isStore(obj)) {
+        obj.subscribe((value) => setProp(prop, value));
+    } else {
+        obj.then((value) => setProp(prop, value));
+    }
     return obj[CSS] = prop;
 }
 
