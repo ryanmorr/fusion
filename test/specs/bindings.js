@@ -59,52 +59,9 @@ describe('bindings', () => {
         expect(getStyle(element2, 'width')).to.equal('58px');
     });
 
-    it('should support derived stores', () => {
-        const x = val(5);
-        const y = val(10);
-        const width = derived(x, y, (xVal, yVal) => `${xVal * yVal}px`);
-
-        appendStyle(css`
-            .foo {
-                width: ${width};
-            }
-        `);
-        
-        const element = createElement('div', {className: 'foo'});
-        
-        expect(getStyle(element, 'width')).to.equal('50px');
-
-        x.set(6);
-        expect(getStyle(element, 'width')).to.equal('60px');
-
-        y.set(8);
-        expect(getStyle(element, 'width')).to.equal('48px');
-    });
-
-    it('should support promises', (done) => {
-        const width = new Promise((resolve) => {
-            setTimeout(() => resolve('103px'), 100);
-        });
-
-        appendStyle(css`
-            .foo {
-                width: ${width};
-            }
-        `);
-        
-        const element = createElement('div', {className: 'foo'});
-        
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('103px');
-            done();
-        });
-    });
-
     it('should not set a CSS variable if the value is null or undefined', (done) => {
         const margin = val(undefined);
-        const padding = new Promise((resolve) => {
-            setTimeout(() => resolve(null), 100);
-        });
+        const padding = new Promise((resolve) => setTimeout(() => resolve(null), 100));
 
         appendStyle(css`
             .foo {
@@ -143,5 +100,65 @@ describe('bindings', () => {
 
         height.set(undefined);
         expect(getStyle(element, 'height')).to.equal('0px');
+    });
+
+    it('should support derived stores', () => {
+        const x = val(5);
+        const y = val(10);
+        const width = derived(x, y, (xVal, yVal) => `${xVal * yVal}px`);
+
+        appendStyle(css`
+            .foo {
+                width: ${width};
+            }
+        `);
+        
+        const element = createElement('div', {className: 'foo'});
+        
+        expect(getStyle(element, 'width')).to.equal('50px');
+
+        x.set(6);
+        expect(getStyle(element, 'width')).to.equal('60px');
+
+        y.set(8);
+        expect(getStyle(element, 'width')).to.equal('48px');
+    });
+
+    it('should support promises', (done) => {
+        const width = new Promise((resolve) => setTimeout(() => resolve('103px'), 100));
+
+        appendStyle(css`
+            .foo {
+                width: ${width};
+            }
+        `);
+        
+        const element = createElement('div', {className: 'foo'});
+        
+        width.then(() => {
+            expect(getStyle(element, 'width')).to.equal('103px');
+            done();
+        });
+    });
+
+    it('should support stores that return promises', (done) => {
+        const width = val();
+
+        appendStyle(css`
+            .foo {
+                width: ${width};
+            }
+        `);
+        
+        const element = createElement('div', {className: 'foo'});
+
+        const promise = new Promise((resolve) => setTimeout(() => resolve('92px'), 100));
+
+        width.set(promise);
+        
+        promise.then(() => {
+            expect(getStyle(element, 'width')).to.equal('92px');
+            done();
+        });
     });
 });

@@ -22,6 +22,10 @@ function resolveValue(value) {
 }
 
 function setProp(prop, value) {
+    if (isPromise(value)) {
+        value.then((val) => setProp(prop, val));
+        return;
+    }
     const currentValue = docStyle.getPropertyValue(prop);
     if (currentValue !== '' && value == null) {
         docStyle.removeProperty(prop);
