@@ -11,6 +11,9 @@ function resolveValue(value) {
         if (value[TYPE] === 'media') {
             return `@media ${value[CSS]}`;
         }
+        if (value[TYPE] === 'query') {
+            return value[CSS];
+        }
     }
     if (isPromise(value)) {
         return `var(${getProp(value)})`;
