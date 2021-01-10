@@ -161,4 +161,31 @@ describe('bindings', () => {
             done();
         });
     });
+
+    it('should support shadow DOM', () => {
+        let element;
+        const width = val('128px');
+
+        customElements.define('foo-bar', class FooBar extends HTMLElement {
+            constructor() {
+                super();
+                const root = this.attachShadow({mode: 'open'});
+                root.appendChild(css`
+                    div {
+                        width: ${width};
+                    }
+                `);
+                element = document.createElement('div');
+                root.appendChild(element);
+            }
+        });
+
+        createElement('foo-bar');
+
+        expect(getStyle(element, 'width')).to.equal('128px');
+
+        width.set('27px');
+
+        expect(getStyle(element, 'width')).to.equal('27px');
+    });
 });

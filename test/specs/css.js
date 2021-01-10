@@ -38,23 +38,4 @@ describe('css', () => {
         expect(getStyle(element, 'width')).to.equal('45px');
         expect(getStyle(element, 'height')).to.equal('31px');
     });
-
-    it('should support shadow DOM', () => {
-        customElements.define('foo-bar', class FooBar extends HTMLElement {
-            constructor() {
-                super();
-                const root = this.attachShadow({mode: 'open'});
-                root.appendChild(css`
-                    div {
-                        width: 128px;
-                    }
-                `);
-                root.appendChild(document.createElement('div'));
-            }
-        });
-
-        const element = createElement('foo-bar');
-
-        expect(getStyle(element.shadowRoot.querySelector('div'), 'width')).to.equal('128px');
-    });
 });
