@@ -19,7 +19,7 @@ export function appendStyle(style) {
 }
 
 export function wait(callback) {
-    setTimeout(callback, 500);
+    setTimeout(callback, 100);
 }
 
 afterEach(() => elements.forEach((el) => el.remove()));
