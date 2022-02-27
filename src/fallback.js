@@ -4,7 +4,10 @@ import { isStore, isPromise } from './util';
 export function fallback(...values) {
     let n = 1;
     const length = values.length;
-    return values.reduce((acc, value, i) => {
+    const reducer = (acc, value, i) => {
+        if (typeof value === 'function') {
+            return reducer(acc, value(), i);
+        }
         if (isStore(value) || isPromise(value)) {
             n++;
             acc += `var(${getProp(value)}`;
@@ -16,5 +19,6 @@ export function fallback(...values) {
         }
         acc += ((i + 1) !== length) ? ', ' : Array(n).join(')');
         return acc;
-    }, '');
+    };
+    return values.reduce(reducer, '');
 }

@@ -1,7 +1,7 @@
 import './val';
 import './derived';
 import './css';
-import './bindings';
+import './interpolation';
 import './fallback';
 import './media';
 import './query';

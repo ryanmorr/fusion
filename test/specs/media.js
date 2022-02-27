@@ -1,5 +1,5 @@
 import { media, css } from '../../src/fusion';
-import { getStyle, wait } from '../setup';
+import { getStyle, wait } from '../util';
 
 describe('media', () => {
     let iframe;

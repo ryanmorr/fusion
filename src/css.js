@@ -4,6 +4,9 @@ import { uuid, isStore, isPromise } from './util';
 const docStyle = document.documentElement.style;
 
 function resolveValue(value) {
+    if (typeof value === 'function') {
+        return resolveValue(value());
+    }
     if (isStore(value)) {
         if (value[TYPE] === 'val' || value[TYPE] === 'derived') {
             return `var(${getProp(value)})`;
@@ -22,9 +25,11 @@ function resolveValue(value) {
 }
 
 function setProp(prop, value) {
+    if (typeof value === 'function') {
+        return setProp(prop, value());
+    }
     if (isPromise(value)) {
-        value.then((val) => setProp(prop, val));
-        return;
+        return value.then((val) => setProp(prop, val));
     }
     const currentValue = docStyle.getPropertyValue(prop);
     if (currentValue !== '' && value == null) {

@@ -1,5 +1,5 @@
 import { query, css } from '../../src/fusion';
-import { createElement, appendStyle, getStyle, wait } from '../setup';
+import { createElement, appendStyle, getStyle, wait } from '../util';
 
 describe('query', () => {
     it('should query for elements', () => {
