@@ -1,7 +1,8 @@
-import { TYPE, CSS } from './constants';
-import { uuid, isStore, isPromise } from './util';
+import { TYPE, NAME, CSS } from './constants';
+import { getProp } from './prop';
+import { isStore, isPromise } from './util';
 
-const docStyle = document.documentElement.style;
+const keyframes = {};
 
 function resolveValue(value) {
     if (typeof value === 'function') {
@@ -14,6 +15,13 @@ function resolveValue(value) {
         if (value[TYPE] === 'media') {
             return `@media ${value[CSS]}`;
         }
+        if (value[TYPE] === 'keyframes') {
+            const name = value[NAME];
+            if (!(name in keyframes)) {
+                keyframes[value[NAME]] = `@keyframes ${value[NAME]} { ${value[CSS]} }`;
+            }
+            return name;
+        }
         if (value[TYPE] === 'query') {
             return value[CSS];
         }
@@ -24,36 +32,15 @@ function resolveValue(value) {
     return value;
 }
 
-function setProp(prop, value) {
-    if (typeof value === 'function') {
-        return setProp(prop, value());
-    }
-    if (isPromise(value)) {
-        return value.then((val) => setProp(prop, val));
-    }
-    const currentValue = docStyle.getPropertyValue(prop);
-    if (currentValue !== '' && value == null) {
-        docStyle.removeProperty(prop);
-    } else if (value != null) {
-        docStyle.setProperty(prop, value);
-    }
-}
-
-export function getProp(obj) {
-    if (CSS in obj) {
-        return obj[CSS];
-    }
-    const prop = `--${uuid()}`;
-    if (isStore(obj)) {
-        obj.subscribe((value) => setProp(prop, value));
-    } else {
-        obj.then((value) => setProp(prop, value));
-    }
-    return obj[CSS] = prop;
-}
-
 export function css(strings, ...values) {
-    const styles = strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
+    let styles = strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
+    Object.keys(keyframes).forEach((key) => {
+        const value = keyframes[key];
+        if (typeof value === 'string') {
+            styles += ' ' + value;
+            keyframes[key] = true;
+        }
+    });
     const style = document.createElement('style');
     style.appendChild(document.createTextNode(styles));
     return style;

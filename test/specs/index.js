@@ -5,3 +5,4 @@ import './interpolation';
 import './fallback';
 import './media';
 import './query';
+import './keyframes';

@@ -1,4 +1,4 @@
-import { getProp } from './css';
+import { getProp } from './prop';
 import { isStore, isPromise } from './util';
 
 export function fallback(...values) {
