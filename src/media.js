@@ -1,5 +1,5 @@
 import createStore from '@ryanmorr/create-store';
-import { TYPE, CSS } from './constants';
+import { TYPE, MEDIA, CSS } from './constants';
 
 export const media = createStore((get, set) => (query) => {
     const mq = matchMedia(query);
@@ -11,7 +11,7 @@ export const media = createStore((get, set) => (query) => {
     }
     setValue();
     return {
-        [TYPE]: 'media',
+        [TYPE]: MEDIA,
         [CSS]: query,
         get
     };

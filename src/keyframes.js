@@ -1,5 +1,5 @@
 import createStore from '@ryanmorr/create-store';
-import { TYPE, NAME, CSS } from './constants';
+import { TYPE, KEYFRAMES, CSS } from './constants';
 import { getProp } from './prop';
 import { isStore, uuid } from './util';
 
@@ -54,9 +54,9 @@ export const keyframes = createStore((get, set) => (strings, ...values) => {
     listeners[name] = {get, set};
     set([], []);
     return {
-        [TYPE]: 'keyframes',
-        [NAME]: name,
+        [TYPE]: KEYFRAMES,
         [CSS]: frames,
+        toString: () => name,
         get
     };
 });

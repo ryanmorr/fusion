@@ -1,3 +1,5 @@
 export const CSS = Symbol('css');
-export const NAME = Symbol('name');
 export const TYPE = Symbol('type');
+export const MEDIA = Symbol('media');
+export const QUERY = Symbol('query');
+export const KEYFRAMES = Symbol('keyframes');

@@ -1,4 +1,3 @@
-import { NAME } from '../../src/constants';
 import { keyframes, css, val, fallback } from '../../src/fusion';
 import { createElement, getStyle } from '../util';
 
@@ -41,7 +40,7 @@ describe('keyframes', () => {
         element.classList.add('animate');
 
         addEvent(element, 'animationend', (e) => {
-            expect(e.animationName).to.equal(animation[NAME]);
+            expect(e.animationName).to.equal(animation.toString());
             expect(getStyle(element, 'width')).to.equal('53px');
 
             style.remove();

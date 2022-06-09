@@ -1,5 +1,4 @@
 import createStore from '@ryanmorr/create-store';
-import { TYPE } from './constants';
 
 export const derived = createStore((get, set) => (...deps) => {
     let initialized = false;
@@ -15,7 +14,6 @@ export const derived = createStore((get, set) => (...deps) => {
     initialized = true;
     sync();
     return {
-        [TYPE]: 'derived',
         get
     };
 });

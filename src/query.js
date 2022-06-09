@@ -1,5 +1,5 @@
 import createStore from '@ryanmorr/create-store';
-import { TYPE, CSS } from './constants';
+import { TYPE, QUERY, CSS } from './constants';
 
 let observer = null;
 const listeners = [];
@@ -35,7 +35,7 @@ export const query = createStore((get, set) => (selector) => {
     listeners.push({selector, get, set});
     set(find(selector), [], [], []);
     return {
-        [TYPE]: 'query',
+        [TYPE]: QUERY,
         [CSS]: selector,
         get
     };

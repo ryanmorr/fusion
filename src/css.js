@@ -1,28 +1,28 @@
-import { TYPE, NAME, CSS } from './constants';
+import { TYPE, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
 import { getProp } from './prop';
 import { isStore, isPromise } from './util';
 
 const keyframes = {};
 
 function resolveValue(value) {
-    if (typeof value === 'function') {
+    if (typeof value === 'function' && !isStore(value)) {
         return resolveValue(value());
     }
     if (isStore(value)) {
-        if (value[TYPE] === 'val' || value[TYPE] === 'derived') {
+        if (!(TYPE in value)) {
             return `var(${getProp(value)})`;
         }
-        if (value[TYPE] === 'media') {
+        if (value[TYPE] === MEDIA) {
             return `@media ${value[CSS]}`;
         }
-        if (value[TYPE] === 'keyframes') {
-            const name = value[NAME];
+        if (value[TYPE] === KEYFRAMES) {
+            const name = value.toString();
             if (!(name in keyframes)) {
-                keyframes[value[NAME]] = `@keyframes ${value[NAME]} { ${value[CSS]} }`;
+                keyframes[name] = `@keyframes ${name} { ${value[CSS]} }`;
             }
             return name;
         }
-        if (value[TYPE] === 'query') {
+        if (value[TYPE] === QUERY) {
             return value[CSS];
         }
     }
