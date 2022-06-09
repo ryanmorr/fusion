@@ -21,4 +21,26 @@ describe('css', () => {
 
         style.remove();
     });
+
+    it('should support custom elements', () => {
+        let element;
+
+        customElements.define('custom-element', class CustomElement extends HTMLElement {
+            connectedCallback() {
+
+                const root = this.attachShadow({mode: 'open'});
+                root.appendChild(css`
+                    div {
+                        width: 61px;
+                    }
+                `);
+                element = document.createElement('div');
+                root.appendChild(element);
+            }
+        });
+
+        createElement('custom-element');
+
+        expect(getStyle(element, 'width')).to.equal('61px');
+    });
 });

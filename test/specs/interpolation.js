@@ -460,7 +460,7 @@ describe('interpolation', () => {
         let element;
         const width = val('128px');
 
-        customElements.define('foo-bar', class FooBar extends HTMLElement {
+        customElements.define('custom-element-2', class CustomElement2 extends HTMLElement {
             constructor() {
                 super();
                 const root = this.attachShadow({mode: 'open'});
@@ -474,7 +474,7 @@ describe('interpolation', () => {
             }
         });
 
-        createElement('foo-bar');
+        createElement('custom-element-2');
 
         expect(getStyle(element, 'width')).to.equal('128px');
 
