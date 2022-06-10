@@ -25,7 +25,7 @@ function checkSelectors() {
         const added = next.filter((el) => !prev.includes(el));
         const removed = prev.filter((el) => !next.includes(el));
         if (added.length > 0 || removed.length > 0) {
-            set(next, prev, added, removed);
+            set(next, prev);
         }
     });
 }
@@ -33,7 +33,7 @@ function checkSelectors() {
 export const query = createStore((get, set) => (selector) => {
     startObserver();
     listeners.push({selector, get, set});
-    set(find(selector), [], [], []);
+    set(find(selector), []);
     return {
         [TYPE]: QUERY,
         [CSS]: selector,
