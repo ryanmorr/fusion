@@ -9,31 +9,42 @@ describe('val', () => {
         expect(bar.get()).to.equal(123);
     });
 
-    it('should set the internal value', () => {
+    it('should set the internal value and return the new value', () => {
         const value = val('foo');
         
         expect(value.get()).to.equal('foo');
 
-        value.set('bar');
+        expect(value.set('bar')).to.equal('bar');
         expect(value.get()).to.equal('bar');
 
-        value.set('baz');
+        expect(value.set('baz')).to.equal('baz');
         expect(value.get()).to.equal('baz');
     });
 
-    it('should update the internal value with a callback function', () => {
+    it('should update the internal value with a callback function and return the new value', () => {
         const value = val(1);
         
         expect(value.get()).to.equal(1);
 
-        value.update((val) => val + 10);
+        expect(value.update((val) => val + 10)).to.equal(11);
         expect(value.get()).to.equal(11);
 
-        value.update((val) => val + 100);
+        expect(value.update((val) => val + 100)).to.equal(111);
         expect(value.get()).to.equal(111);
     });
 
-    it('should call subscribers immediately and when the internal value changes', () => {
+    it('should call a subscriber immediately when added', () => {
+        const value = val();
+        
+        const spy = sinon.spy();
+        value.subscribe(spy);
+
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal(undefined);
+        expect(spy.args[0][1]).to.equal(undefined);
+    });
+
+    it('should call subscribers when the internal value changes', () => {
         const value = val(10);
         
         const spy = sinon.spy();
@@ -67,13 +78,13 @@ describe('val', () => {
         expect(spy.args[0][0]).to.equal(10);
         expect(spy.args[0][1]).to.equal(undefined);
 
-        set(20);
+        expect(set(20)).to.equal(20);
         expect(get()).to.equal(20);
         expect(spy.callCount).to.equal(2);
         expect(spy.args[1][0]).to.equal(20);
         expect(spy.args[1][1]).to.equal(10);
 
-        update((val) => val + 100);
+        expect(update((val) => val + 100)).to.equal(120);
         expect(get()).to.equal(120);
         expect(spy.callCount).to.equal(3);
         expect(spy.args[2][0]).to.equal(120);
