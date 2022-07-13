@@ -38,7 +38,7 @@ color.set('blue');
 
 ### val(value?)
 
-Create a reactive store that encapsulates a value and notifies subscribers when the value changes:
+Create a reactive store that encapsulates a value and can notify subscribers when the value changes:
 
 ```javascript
 import { val } from '@ryanmorr/fusion';
@@ -55,9 +55,10 @@ count.set(1);
 // Set the store value with a callback function
 count.update((val) => val + 1);
 
-// Subscribe a callback function to be invoked when the value changes
-count.subscribe((nextVal, prevVal) => {
-
+// Subscribe a callback function to be invoked when the value changes,
+// it returns a function to unsubscribe from future updates
+const unsubscribe = count.subscribe((nextVal, prevVal) => {
+    // Do something
 });
 ```
 
@@ -77,6 +78,11 @@ fullName.get(); //=> "John Doe"
 firstName.set('Jane');
 
 fullName.get(); //=> "Jane Doe"
+
+// Subscribe to be notified of changes
+const unsubscribe = fullName.subscribe((nextVal, prevVal) => {
+    // Do something
+});
 ```
 
 ### css(strings, ...values?)
@@ -98,9 +104,13 @@ const style = css`
 `;
 ```
 
+#### Bindings
+
 When a reactive store is interpolated into a `css` stylesheet, it is replaced with a unique CSS variable bound to that store and will be automatically updated when the internal store value changes:
 
 ```javascript
+import { css, val } from '@ryanmorr/reflex';
+
 const width = val('10px');
 
 document.head.appendChild(css`
@@ -121,7 +131,9 @@ getComputedStyle(element).getPropertyValue('width'); //=> "50px"
 Similarly to stores, promises can also be interpolated into a `css` stylesheet, setting the value of the binding CSS variable when the promise resolves:
 
 ```javascript
-const height = new Promise((resolve) => setTimeout(() => resolve('100px'), 2000));
+import { html } from '@ryanmorr/reflex';
+
+const height = Promise.resolve('100px');
 
 const style = css`
     .foo {
@@ -134,13 +146,13 @@ If a store or promise returns a value of null or undefined, the binding CSS vari
 
 ### fallback(...values)
 
-Add one or more fallback values for a CSS property, supporting stores, promises, and CSS variable names. Moving left to right, if the value provided is null or undefined then precedence moves to the next fallback value:
+Add one or more fallback values for a CSS variable, supporting stores, promises, and CSS variable names. Moving left to right, if the value provided is null or undefined then precedence moves to the next fallback value:
 
 ```javascript
 import { fallback, val, css } from '@ryanmorr/fusion';
 
 const store = val();
-const promise = new Promise((resolve) => setTimeout(() => resolve('30px'), 2000));
+const promise = Promise.resolve('30px');
 
 document.head.appendChild(css`
     .foo {
@@ -177,7 +189,7 @@ import { media, css } from '@ryanmorr/fusion';
 const smallScreen = media('(max-width: 750px)');
 
 // Returns true if the media query currently matches
-smallScreen.get(); //=> true/false
+const isSmallScreen = smallScreen.get(); //=> true/false
 
 // Interpolate the media query into a stylesheet
 const style = css`
@@ -190,7 +202,7 @@ const style = css`
 
 // Subscribers are called when the status of the media query changes
 smallScreen.subscribe((isSmallScreen) => {
-
+    // Do something
 });
 ```
 
@@ -205,7 +217,7 @@ import { query, css } from '@ryanmorr/fusion';
 const fooElements = query('.foo');
 
 // Returns an array of elements that match the CSS selector
-fooElements.get();
+const elements = fooElements.get();
 
 // Interpolate the CSS selector into a stylesheet
 const style = css`
@@ -216,10 +228,49 @@ const style = css`
 
 // Subscribers are called when elements matching the
 // CSS selector are added to or removed from the DOM
-fooElements.subscribe((nextElements, prevElements, addedElements, removedElements) => {
-
+fooElements.subscribe((nextElements, prevElements) => {
+    // Do something
 });
 ```
+
+### keyframes(strings, ...values?)
+
+Create a reactive store for a keyframes animation. When an element begins an animation created with `keyframes` it is automatically added to an internal array of the store, alerting subscribers. When the animation ends, the element is removed from the store's array, again notifying subscribers:
+
+```javascript
+import { keyframes, css } from '@ryanmorr/reflex';
+
+// Create a keyframes animation
+const slideIn = keyframes`
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(100%);
+    }
+`;
+
+// Returns an array of elements currently in the
+// midst of the `slideIn` animation
+const elements = slideIn.get();
+
+// Interpolate the keyframes store where you would
+// normally put the name of a keyframes animation
+const stylesheet = css`
+    .foo {
+        animation: ${slideIn} 1s ease-in;
+    }
+`;
+
+// Subscribers are called when elements start and end the animation
+slideIn.subscribe((nextElements, prevElements) => {
+    // Do something
+});
+```
+
+## DOM
+
+For a DOM-based solution, refer to [reflex](https://github.com/ryanmorr/reflex), a similar library that brings reactivity to elements and attributes. It is also 100% compatible with fusion.
 
 ## License
 
