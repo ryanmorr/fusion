@@ -29,7 +29,7 @@ describe('media', () => {
         expect(mq.get()).to.equal(false);
     });
 
-    it('should call subscribes when the status of the media query changes', (done) => {
+    it('should call subscribes when the status of the media query changes', async () => {
         setWidth(800);
 
         const mq = media('(max-width: 750px)');
@@ -42,22 +42,20 @@ describe('media', () => {
 
         setWidth(700);
 
-        wait(() => {
-            expect(spy.callCount).to.equal(2);
-            expect(spy.args[1][0]).to.equal(true);
+        await wait();
 
-            setWidth(900);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal(true);
 
-            wait(() => {
-                expect(spy.callCount).to.equal(3);
-                expect(spy.args[2][0]).to.equal(false);
+        setWidth(900);
 
-                done();
-            });
-        });
+        await wait();
+
+        expect(spy.callCount).to.equal(3);
+        expect(spy.args[2][0]).to.equal(false);
     });
 
-    it('should interpolate a media store into a CSS stylesheet', (done) => {
+    it('should interpolate a media store into a CSS stylesheet', async () => {
         setWidth(800);
 
         const smallScreen = media('(max-width: 750px)');
@@ -82,10 +80,8 @@ describe('media', () => {
 
         setWidth(700);
 
-        wait(() => {
-            expect(getStyle(element, 'width')).to.equal('20px');
+        await wait();
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('20px');
     });
 });

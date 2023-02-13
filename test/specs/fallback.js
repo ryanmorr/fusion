@@ -86,7 +86,7 @@ describe('fallback', () => {
         expect(getStyle(element, 'width')).to.equal('26px');
     });
 
-    it('should support promises', (done) => {
+    it('should support promises', async () => {
         const width = Promise.resolve('54px');
 
         appendStyle(css`
@@ -99,14 +99,12 @@ describe('fallback', () => {
 
         expect(getStyle(element, 'width')).to.equal('10px');
 
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('54px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('54px');
     });
 
-    it('should support multiple promises', (done) => {
+    it('should support multiple promises', async () => {
         const width1 = new Promise((resolve) => setTimeout(() => resolve('77px'), 20));
         const width2 = new Promise((resolve) => setTimeout(() => resolve('66px'), 10));
 
@@ -120,15 +118,13 @@ describe('fallback', () => {
 
         expect(getStyle(element, 'width')).to.equal('25px');
 
-        width2.then(() => {
-            expect(getStyle(element, 'width')).to.equal('66px');
-            
-            width1.then(() => {
-                expect(getStyle(element, 'width')).to.equal('77px');
+        await width2;
 
-                done();
-            });
-        });
+        expect(getStyle(element, 'width')).to.equal('66px');
+
+        await width1;
+
+        expect(getStyle(element, 'width')).to.equal('77px');
     });
 
     it('should support functions', () => {
@@ -160,7 +156,7 @@ describe('fallback', () => {
         expect(getStyle(element, 'width')).to.equal('33px');
     });
 
-    it('should support functions that return a promise', (done) => {
+    it('should support functions that return a promise', async () => {
         const width = Promise.resolve('77px');
 
         appendStyle(css`
@@ -173,11 +169,9 @@ describe('fallback', () => {
 
         expect(getStyle(element, 'width')).to.equal('15px');
 
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('77px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('77px');
     });
 
     it('should support functions that return a store', () => {
@@ -197,7 +191,7 @@ describe('fallback', () => {
         expect(getStyle(element, 'width')).to.equal('8px');
     });
 
-    it('should support multiple fallbacks of mixed types', (done) => {
+    it('should support multiple fallbacks of mixed types', async () => {
         const widthStore = val();
         const widthPromise = Promise.resolve('50px');
 
@@ -214,15 +208,13 @@ describe('fallback', () => {
         document.documentElement.style.setProperty('--foo', '111px');
         expect(getStyle(element, 'width')).to.equal('111px');
 
-        widthPromise.then(() => {
-            expect(getStyle(element, 'width')).to.equal('50px');
+        await widthPromise;
 
-            widthStore.set('14px');
-            expect(getStyle(element, 'width')).to.equal('14px');
+        expect(getStyle(element, 'width')).to.equal('50px');
 
-            document.documentElement.style.removeProperty('--foo');
+        widthStore.set('14px');
+        expect(getStyle(element, 'width')).to.equal('14px');
 
-            done();
-        });
+        document.documentElement.style.removeProperty('--foo');
     });
 });

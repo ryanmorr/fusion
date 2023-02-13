@@ -18,8 +18,8 @@ export function appendStyle(style) {
     return style;
 }
 
-export function wait(callback) {
-    setTimeout(callback, 100);
+export function wait() {
+    return new Promise((resolve) => setTimeout(resolve, 50));
 }
 
 afterEach(() => elements.forEach((el) => el.remove()));

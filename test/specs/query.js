@@ -11,7 +11,7 @@ describe('query', () => {
         expect(elements.get()).to.deep.equal([element1, element2]);
     });
 
-    it('should call subscribes when matching elements are added to the DOM', (done) => {
+    it('should call subscribes when matching elements are added to the DOM', async () => {
         const element1 = createElement('div', {className: 'foo'});
 
         const elements = query('.foo');
@@ -24,17 +24,15 @@ describe('query', () => {
 
         const element2 = createElement('div', {className: 'foo'});
 
-        wait(() => {
-            expect(spy.callCount).to.equal(2);
-            expect(spy.args[1][0]).to.deep.equal([element1, element2]);
-            expect(spy.args[1][1]).to.deep.equal([element1]);
-            expect(elements.get()).to.deep.equal([element1, element2]);
+        await wait();
 
-            done();
-        });
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.deep.equal([element1, element2]);
+        expect(spy.args[1][1]).to.deep.equal([element1]);
+        expect(elements.get()).to.deep.equal([element1, element2]);
     });
 
-    it('should call subscribes when matching elements are removed from the DOM', (done) => {
+    it('should call subscribes when matching elements are removed from the DOM', async () => {
         const element1 = createElement('div', {className: 'foo'});
         const element2 = createElement('div', {className: 'foo'});
         const element3 = createElement('div', {className: 'foo'});
@@ -49,17 +47,15 @@ describe('query', () => {
 
         element1.remove();
 
-        wait(() => {
-            expect(spy.callCount).to.equal(2);
-            expect(spy.args[1][0]).to.deep.equal([element2, element3]);
-            expect(spy.args[1][1]).to.deep.equal([element1, element2, element3]);
-            expect(elements.get()).to.deep.equal([element2, element3]);
+        await wait();
 
-            done();
-        });
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.deep.equal([element2, element3]);
+        expect(spy.args[1][1]).to.deep.equal([element1, element2, element3]);
+        expect(elements.get()).to.deep.equal([element2, element3]);
     });
 
-    it('should call subscribes when matching elements are added and removed from the DOM', (done) => {
+    it('should call subscribes when matching elements are added and removed from the DOM', async () => {
         const element1 = createElement('div', {className: 'foo'});
 
         const elements = query('.foo');
@@ -74,28 +70,26 @@ describe('query', () => {
         const element3 = createElement('div', {className: 'foo'});
         const element4 = createElement('div', {className: 'foo'});
 
-        wait(() => {
-            expect(spy.callCount).to.equal(2);
-            expect(spy.args[1][0]).to.deep.equal([element1, element2, element3, element4]);
-            expect(spy.args[1][1]).to.deep.equal([element1]);
-            expect(elements.get()).to.deep.equal([element1, element2, element3, element4]);
+        await wait();
 
-            element2.remove();
-            element4.remove();
-            const element5 = createElement('div', {className: 'foo'});
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.deep.equal([element1, element2, element3, element4]);
+        expect(spy.args[1][1]).to.deep.equal([element1]);
+        expect(elements.get()).to.deep.equal([element1, element2, element3, element4]);
 
-            wait(() => {
-                expect(spy.callCount).to.equal(3);
-                expect(spy.args[2][0]).to.deep.equal([element1, element3, element5]);
-                expect(spy.args[2][1]).to.deep.equal([element1, element2, element3, element4]);
-                expect(elements.get()).to.deep.equal([element1, element3, element5]);
-    
-                done();
-            });
-        });
+        element2.remove();
+        element4.remove();
+        const element5 = createElement('div', {className: 'foo'});
+
+        await wait();
+
+        expect(spy.callCount).to.equal(3);
+        expect(spy.args[2][0]).to.deep.equal([element1, element3, element5]);
+        expect(spy.args[2][1]).to.deep.equal([element1, element2, element3, element4]);
+        expect(elements.get()).to.deep.equal([element1, element3, element5]);
     });
 
-    it('should not call subscribes if the DOM has changed but the elements are the same', (done) => {
+    it('should not call subscribes if the DOM has changed but the elements are the same', async () => {
         const element1 = createElement('div', {className: 'foo'});
         const element2 = createElement('div', {className: 'foo'});
     
@@ -110,11 +104,9 @@ describe('query', () => {
         element2.remove();
         document.body.appendChild(element2);
     
-        wait(() => {
-            expect(spy.callCount).to.equal(1);
-            
-            done();
-        });
+        await wait();
+
+        expect(spy.callCount).to.equal(1);
     });
 
     it('should interpolate a query store into a CSS stylesheet', () => {

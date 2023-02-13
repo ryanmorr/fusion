@@ -87,7 +87,7 @@ describe('interpolation', () => {
         expect(getStyle(element2, 'width')).to.equal('58px');
     });
 
-    it('should interpolate a promise', (done) => {
+    it('should interpolate a promise', async () => {
         const width = Promise.resolve('103px');
 
         appendStyle(css`
@@ -98,11 +98,9 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
         
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('103px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('103px');
     });
 
     it('should not set a CSS variable if a store contains null or undefined', () => {
@@ -122,7 +120,7 @@ describe('interpolation', () => {
         expect(getStyle(element, 'padding')).to.equal('0px');
     });
 
-    it('should not set a CSS variable if a promise resolves with a value of null or undefined', (done) => {
+    it('should not set a CSS variable if a promise resolves with a value of null or undefined', async () => {
         const margin = Promise.resolve(undefined);
         const padding = Promise.resolve(null);
 
@@ -135,15 +133,13 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
         
-        Promise.all([margin, padding]).then(() => {
-            expect(getStyle(element, 'margin')).to.equal('0px');
-            expect(getStyle(element, 'padding')).to.equal('0px');
+        await Promise.all([margin, padding]);
 
-            done();
-        });
+        expect(getStyle(element, 'margin')).to.equal('0px');
+        expect(getStyle(element, 'padding')).to.equal('0px');
     });
 
-    it('should not set a CSS variable if a promise is rejected', (done) => {
+    it('should not set a CSS variable if a promise is rejected', async () => {
         const margin = Promise.reject('10px');
 
         appendStyle(css`
@@ -154,11 +150,11 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
         
-        margin.catch(() => {
+        try {
+            await margin;
+        } catch {
             expect(getStyle(element, 'margin')).to.equal('0px');
-
-            done();
-        });
+        }
     });
 
     it('should unset a CSS variable with null or undefined', () => {
@@ -184,7 +180,7 @@ describe('interpolation', () => {
         expect(getStyle(element, 'height')).to.equal('0px');
     });
 
-    it('should interpolate a store that contains a promise', (done) => {
+    it('should interpolate a store that contains a promise', async () => {
         const width = val();
 
         appendStyle(css`
@@ -199,11 +195,9 @@ describe('interpolation', () => {
 
         width.set(promise);
         
-        promise.then(() => {
-            expect(getStyle(element, 'width')).to.equal('92px');
+        await promise;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('92px');
     });
 
     it('should interpolate a derived store', () => {
@@ -258,7 +252,7 @@ describe('interpolation', () => {
         expect(getStyle(element, 'width')).to.equal('31px');
     });
 
-    it('should interpolate a function that returns a promise', (done) => {
+    it('should interpolate a function that returns a promise', async () => {
         const width = Promise.resolve('27px');
 
         appendStyle(css`
@@ -269,14 +263,12 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
 
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('27px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('27px');
     });
 
-    it('should interpolate a promise that resolves with a function', (done) => {
+    it('should interpolate a promise that resolves with a function', async () => {
         const width = Promise.resolve(() => '68px');
 
         appendStyle(css`
@@ -287,11 +279,9 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
 
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('68px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('68px');
     });
 
     it('should interpolate a store that contains a function', () => {
@@ -312,7 +302,7 @@ describe('interpolation', () => {
         expect(getStyle(element, 'width')).to.equal('44px');
     });
 
-    it('should interpolate a store that contains a promise that resolves with a function', (done) => {
+    it('should interpolate a store that contains a promise that resolves with a function', async () => {
         const promise = Promise.resolve(() => '19px');
         const width = val(promise);
 
@@ -324,11 +314,9 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
 
-        promise.then(() => {
-            expect(getStyle(element, 'width')).to.equal('19px');
+        await promise;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('19px');
     });
 
     it('should support custom stores that have a subscribe method', () => {
@@ -385,7 +373,7 @@ describe('interpolation', () => {
         expect(getStyle(element, 'width')).to.equal('32px');
     });
 
-    it('should interpolate a promise that resolves with nested functions', (done) => {
+    it('should interpolate a promise that resolves with nested functions', async () => {
         const width = Promise.resolve(() => () => () => '50px');
 
         appendStyle(css`
@@ -396,14 +384,12 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
 
-        width.then(() => {
-            expect(getStyle(element, 'width')).to.equal('50px');
+        await width;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('50px');
     });
     
-    it('should support multiple interpolations of the same promise', (done) => {
+    it('should support multiple interpolations of the same promise', async () => {
         const promise = Promise.resolve('14px');
 
         appendStyle(css`
@@ -415,12 +401,10 @@ describe('interpolation', () => {
         
         const element = createElement('div', {className: 'foo'});
 
-        promise.then(() => {
-            expect(getStyle(element, 'width')).to.equal('14px');
-            expect(getStyle(element, 'height')).to.equal('14px');
+        await promise;
 
-            done();
-        });
+        expect(getStyle(element, 'width')).to.equal('14px');
+        expect(getStyle(element, 'height')).to.equal('14px');
     });
 
     it('should support multiple interpolations of the same function', () => {
