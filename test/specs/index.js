@@ -1,7 +1,8 @@
 import './val';
 import './derived';
-import './css';
 import './nested-css';
+import './css';
+import './style';
 import './interpolation';
 import './fallback';
 import './media';

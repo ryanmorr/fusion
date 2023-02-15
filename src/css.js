@@ -1,8 +1,10 @@
 import { TYPE, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
 import { convert } from './css-parser';
 import { getProp } from './prop';
-import { isStore, isPromise } from './util';
+import { uuid, isStore, isPromise } from './util';
 
+let stylesheet;
+const CLASS_PREFIX = 'fusion-';
 const keyframes = {};
 
 function resolveValue(value) {
@@ -33,7 +35,7 @@ function resolveValue(value) {
     return value;
 }
 
-export function css(strings, ...values) {
+function process(strings, values) {
     let styles = strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
     Object.keys(keyframes).forEach((key) => {
         const value = keyframes[key];
@@ -42,7 +44,23 @@ export function css(strings, ...values) {
             keyframes[key] = true;
         }
     });
+    return styles;
+}
+
+export function style(strings, ...values) {
+    if (!stylesheet) {
+        stylesheet = document.createElement('style');
+        document.head.appendChild(stylesheet);
+    }
+    const styles = process(strings, values);
+    const className = CLASS_PREFIX + uuid();
+    stylesheet.textContent += convert(`.${className} { ${styles} }`);
+    return className;
+}
+
+export function css(strings, ...values) {
+    const styles = process(strings, values);
     const style = document.createElement('style');
-    style.appendChild(document.createTextNode(convert(styles)));
+    style.textContent += convert(styles);
     return style;
 }
