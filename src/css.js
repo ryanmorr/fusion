@@ -1,4 +1,5 @@
 import { TYPE, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
+import { convert } from './css-parser';
 import { getProp } from './prop';
 import { isStore, isPromise } from './util';
 
@@ -42,6 +43,6 @@ export function css(strings, ...values) {
         }
     });
     const style = document.createElement('style');
-    style.appendChild(document.createTextNode(styles));
+    style.appendChild(document.createTextNode(convert(styles)));
     return style;
 }

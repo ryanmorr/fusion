@@ -22,6 +22,20 @@ describe('css', () => {
         style.remove();
     });
 
+    it('should support nested CSS', () => {
+        const style = css`
+            .foo {
+                color: red;
+        
+                .bar {
+                    color: blue;
+                }
+            }
+        `;
+
+        expect(style.innerHTML).to.equal('.foo{color:red;}.foo .bar{color:blue;}');
+    });
+
     it('should support custom elements', () => {
         let element;
 
