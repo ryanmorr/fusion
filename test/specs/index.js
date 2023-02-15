@@ -3,7 +3,6 @@ import './derived';
 import './nested-css';
 import './css';
 import './style';
-import './interpolation';
 import './fallback';
 import './media';
 import './query';
