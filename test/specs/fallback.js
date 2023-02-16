@@ -1,4 +1,4 @@
-import { css, val, fallback } from '../../src/fusion';
+import { css, style, val, fallback } from '../../src/fusion';
 import { createElement, appendStyle, getStyle } from '../util';
 
 describe('fallback', () => {
@@ -216,5 +216,23 @@ describe('fallback', () => {
         expect(getStyle(element, 'width')).to.equal('14px');
 
         document.documentElement.style.removeProperty('--foo');
+    });
+
+    it('should support fallback in a style declaration', async () => {
+        const store = val();
+
+        const className = style`
+            width: ${fallback(store, '--foo', () => '81px')};
+        `;
+
+        const element = createElement('div', {className});
+
+        expect(getStyle(element, 'width')).to.equal('81px');
+
+        element.style.setProperty('--foo', '44px');
+        expect(getStyle(element, 'width')).to.equal('44px');
+
+        store.set('5px');
+        expect(getStyle(element, 'width')).to.equal('5px');
     });
 });

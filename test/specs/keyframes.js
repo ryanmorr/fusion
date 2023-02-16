@@ -1,4 +1,4 @@
-import { keyframes, css, val, fallback } from '../../src/fusion';
+import { keyframes, css, style, val, fallback } from '../../src/fusion';
 import { createElement, getStyle } from '../util';
 
 describe('keyframes', () => {
@@ -425,5 +425,52 @@ describe('keyframes', () => {
 
         expect(style.innerHTML.match(/@keyframes/g).length).to.equal(1);
         expect(style2.innerHTML.includes('@keyframes')).to.equal(false);
+    });
+
+    it('should support keyframes in a style declaration', (done) => {
+        const animation = keyframes`
+            from {
+                width: 5px;
+            }
+            to {
+                width: 25px;
+            }
+        `;
+
+        const className = style`
+            width: 10px;
+
+            &.animate {
+                animation: ${animation} 0.1s forwards;
+            }
+        `;
+
+        const element = createElement('div', {className});
+
+        expect(animation.get()).to.deep.equal([]);
+
+        const spy = sinon.spy();
+        animation.subscribe(spy);
+
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.deep.equal([]);
+
+        element.classList.add('animate');
+
+        addEvent(document, 'animationstart', () => {
+            expect(animation.get()).to.deep.equal([element]);
+            expect(spy.callCount).to.equal(2);
+            expect(spy.args[1][0]).to.deep.equal([element]);
+            expect(spy.args[1][1]).to.deep.equal([]);
+        });
+
+        addEvent(document, 'animationend', () => {
+            expect(animation.get()).to.deep.equal([]);
+            expect(spy.callCount).to.equal(3);
+            expect(spy.args[2][0]).to.deep.equal([]);
+            expect(spy.args[2][1]).to.deep.equal([element]);
+
+            done();
+        });
     });
 });
