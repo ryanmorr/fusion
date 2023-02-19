@@ -37,6 +37,6 @@ export const query = createStore((get, set) => (selector) => {
     return {
         [TYPE]: QUERY,
         [CSS]: selector,
-        get
+        value: get
     };
 });

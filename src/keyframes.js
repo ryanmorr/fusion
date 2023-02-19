@@ -57,6 +57,6 @@ export const keyframes = createStore((get, set) => (strings, ...values) => {
         [TYPE]: KEYFRAMES,
         [CSS]: frames,
         toString: () => name,
-        get
+        value: get
     };
 });

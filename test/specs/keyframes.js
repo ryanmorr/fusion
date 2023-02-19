@@ -1,4 +1,4 @@
-import { keyframes, css, style, val, fallback } from '../../src/fusion';
+import { keyframes, css, style, store, fallback } from '../../src/fusion';
 import { createElement, getStyle } from '../util';
 
 describe('keyframes', () => {
@@ -71,7 +71,7 @@ describe('keyframes', () => {
         document.head.appendChild(style);
         const element1 = createElement('div', {className: 'foo2'});
 
-        expect(animation.get()).to.deep.equal([]);
+        expect(animation.value()).to.deep.equal([]);
 
         const spy = sinon.spy();
         animation.subscribe(spy);
@@ -82,14 +82,14 @@ describe('keyframes', () => {
         element1.classList.add('animate');
 
         addEvent(document, 'animationstart', () => {
-            expect(animation.get()).to.deep.equal([element1]);
+            expect(animation.value()).to.deep.equal([element1]);
             expect(spy.callCount).to.equal(2);
             expect(spy.args[1][0]).to.deep.equal([element1]);
             expect(spy.args[1][1]).to.deep.equal([]);
         });
 
         addEvent(document, 'animationend', () => {
-            expect(animation.get()).to.deep.equal([]);
+            expect(animation.value()).to.deep.equal([]);
             expect(spy.callCount).to.equal(3);
             expect(spy.args[2][0]).to.deep.equal([]);
             expect(spy.args[2][1]).to.deep.equal([element1]);
@@ -126,7 +126,7 @@ describe('keyframes', () => {
         const element2 = createElement('div', {className: 'foo3'});
         const element3 = createElement('div', {className: 'foo3'});
 
-        expect(animation.get()).to.deep.equal([]);
+        expect(animation.value()).to.deep.equal([]);
 
         const spy = sinon.spy();
         animation.subscribe(spy);
@@ -140,7 +140,7 @@ describe('keyframes', () => {
 
         const animationStartSpy = sinon.spy(() => {
             if (animationStartSpy.callCount === 3) {
-                expect(animation.get()).to.deep.equal([element1, element2, element3]);
+                expect(animation.value()).to.deep.equal([element1, element2, element3]);
                 expect(spy.callCount).to.equal(4);
 
                 expect(spy.args[1][0]).to.deep.equal([element1]);
@@ -157,7 +157,7 @@ describe('keyframes', () => {
 
         const animationEndSpy = sinon.spy(() => {
             if (animationEndSpy.callCount === 3) {
-                expect(animation.get()).to.deep.equal([]);
+                expect(animation.value()).to.deep.equal([]);
                 expect(spy.callCount).to.equal(7);
 
                 expect(spy.args[4][0]).to.deep.equal([element2, element3]);
@@ -213,8 +213,8 @@ describe('keyframes', () => {
         const element2 = createElement('div', {className: 'foo4'});
         const element3 = createElement('div', {className: 'foo4'});
 
-        expect(animation1.get()).to.deep.equal([]);
-        expect(animation2.get()).to.deep.equal([]);
+        expect(animation1.value()).to.deep.equal([]);
+        expect(animation2.value()).to.deep.equal([]);
 
         const spy1 = sinon.spy();
         animation1.subscribe(spy1);
@@ -234,7 +234,7 @@ describe('keyframes', () => {
 
         const animationStartSpy = sinon.spy(() => {
             if (animationStartSpy.callCount === 3) {
-                expect(animation1.get()).to.deep.equal([element1, element3]);
+                expect(animation1.value()).to.deep.equal([element1, element3]);
                 expect(spy1.callCount).to.equal(3);
 
                 expect(spy1.args[1][0]).to.deep.equal([element1]);
@@ -243,7 +243,7 @@ describe('keyframes', () => {
                 expect(spy1.args[2][0]).to.deep.equal([element1, element3]);
                 expect(spy1.args[2][1]).to.deep.equal([element1]);
 
-                expect(animation2.get()).to.deep.equal([element2]);
+                expect(animation2.value()).to.deep.equal([element2]);
                 expect(spy2.callCount).to.equal(2);
 
                 expect(spy2.args[1][0]).to.deep.equal([element2]);
@@ -254,7 +254,7 @@ describe('keyframes', () => {
 
         const animationEndSpy = sinon.spy(() => {
             if (animationEndSpy.callCount === 3) {
-                expect(animation1.get()).to.deep.equal([]);
+                expect(animation1.value()).to.deep.equal([]);
                 expect(spy1.callCount).to.equal(5);
 
                 expect(spy1.args[3][0]).to.deep.equal([element3]);
@@ -263,7 +263,7 @@ describe('keyframes', () => {
                 expect(spy1.args[4][0]).to.deep.equal([]);
                 expect(spy1.args[4][1]).to.deep.equal([element3]);
 
-                expect(animation2.get()).to.deep.equal([]);
+                expect(animation2.value()).to.deep.equal([]);
                 expect(spy2.callCount).to.equal(3);
 
                 expect(spy2.args[2][0]).to.deep.equal([]);
@@ -278,14 +278,14 @@ describe('keyframes', () => {
     }); */
 
     it('should support interpolating stores', (done) => {
-        const store = val('41px');
+        const foo = store('41px');
 
         const animation = keyframes`
             from {
                 width: 10px;
             }
             to {
-                width: ${store};
+                width: ${foo};
             }
         `;
 
@@ -307,7 +307,7 @@ describe('keyframes', () => {
         addEvent(element1, 'animationend', () => {
             expect(getStyle(element1, 'width')).to.equal('41px');
 
-            store.set('36px');
+            foo.set('36px');
 
             element2.classList.add('animate');
         });
@@ -355,14 +355,14 @@ describe('keyframes', () => {
     });
 
     it('should support interpolating fallbacks', (done) => {
-        const store = val();
+        const foo = store();
 
         const animation = keyframes`
             from {
                 width: 1px;
             }
             to {
-                width: ${fallback(store, '33px')};
+                width: ${fallback(foo, '33px')};
             }
         `;
 
@@ -384,7 +384,7 @@ describe('keyframes', () => {
         addEvent(element1, 'animationend', () => {
             expect(getStyle(element1, 'width')).to.equal('33px');
 
-            store.set('7px');
+            foo.set('7px');
 
             element2.classList.add('animate');
         });
@@ -447,7 +447,7 @@ describe('keyframes', () => {
 
         const element = createElement('div', {className});
 
-        expect(animation.get()).to.deep.equal([]);
+        expect(animation.value()).to.deep.equal([]);
 
         const spy = sinon.spy();
         animation.subscribe(spy);
@@ -458,14 +458,14 @@ describe('keyframes', () => {
         element.classList.add('animate');
 
         addEvent(document, 'animationstart', () => {
-            expect(animation.get()).to.deep.equal([element]);
+            expect(animation.value()).to.deep.equal([element]);
             expect(spy.callCount).to.equal(2);
             expect(spy.args[1][0]).to.deep.equal([element]);
             expect(spy.args[1][1]).to.deep.equal([]);
         });
 
         addEvent(document, 'animationend', () => {
-            expect(animation.get()).to.deep.equal([]);
+            expect(animation.value()).to.deep.equal([]);
             expect(spy.callCount).to.equal(3);
             expect(spy.args[2][0]).to.deep.equal([]);
             expect(spy.args[2][1]).to.deep.equal([element]);

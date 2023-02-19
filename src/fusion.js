@@ -1,4 +1,4 @@
-export { val } from './val';
+export { store } from './store';
 export { derived } from './derived';
 export { css, style } from './css';
 export { fallback } from './fallback';

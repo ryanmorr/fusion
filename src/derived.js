@@ -14,6 +14,6 @@ export const derived = createStore((get, set) => (...deps) => {
     initialized = true;
     sync();
     return {
-        get
+        value: get
     };
 });

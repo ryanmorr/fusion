@@ -1,4 +1,4 @@
-import { css, style, val, fallback } from '../../src/fusion';
+import { css, style, store, fallback } from '../../src/fusion';
 import { createElement, appendStyle, getStyle } from '../util';
 
 describe('fallback', () => {
@@ -49,7 +49,7 @@ describe('fallback', () => {
     });
 
     it('should support stores', () => {
-        const width = val();
+        const width = store();
 
         appendStyle(css`
             .foo {
@@ -66,8 +66,8 @@ describe('fallback', () => {
     });
 
     it('should support multiple stores', () => {
-        const width1 = val();
-        const width2 = val();
+        const width1 = store();
+        const width2 = store();
 
         appendStyle(css`
             .foo {
@@ -175,7 +175,7 @@ describe('fallback', () => {
     });
 
     it('should support functions that return a store', () => {
-        const width = val();
+        const width = store();
 
         appendStyle(css`
             .foo {
@@ -192,12 +192,12 @@ describe('fallback', () => {
     });
 
     it('should support multiple fallbacks of mixed types', async () => {
-        const widthStore = val();
+        const widthSignal = store();
         const widthPromise = Promise.resolve('50px');
 
         appendStyle(css`
             .foo {
-                width: ${fallback(widthStore, widthPromise, '--foo', () => '17px')};
+                width: ${fallback(widthSignal, widthPromise, '--foo', () => '17px')};
             }
         `);
 
@@ -212,17 +212,17 @@ describe('fallback', () => {
 
         expect(getStyle(element, 'width')).to.equal('50px');
 
-        widthStore.set('14px');
+        widthSignal.set('14px');
         expect(getStyle(element, 'width')).to.equal('14px');
 
         document.documentElement.style.removeProperty('--foo');
     });
 
     it('should support fallback in a style declaration', async () => {
-        const store = val();
+        const foo = store();
 
         const className = style`
-            width: ${fallback(store, '--foo', () => '81px')};
+            width: ${fallback(foo, '--foo', () => '81px')};
         `;
 
         const element = createElement('div', {className});
@@ -232,7 +232,7 @@ describe('fallback', () => {
         element.style.setProperty('--foo', '44px');
         expect(getStyle(element, 'width')).to.equal('44px');
 
-        store.set('5px');
+        foo.set('5px');
         expect(getStyle(element, 'width')).to.equal('5px');
     });
 });

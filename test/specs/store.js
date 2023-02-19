@@ -1,40 +1,40 @@
-import { val } from '../../src/fusion';
+import { store } from '../../src/fusion';
 
-describe('val', () => {
+describe('store', () => {
     it('should get the internal value', () => {
-        const foo = val();
-        const bar = val(123);
+        const foo = store();
+        const bar = store(123);
         
-        expect(foo.get()).to.equal(undefined);
-        expect(bar.get()).to.equal(123);
+        expect(foo.value()).to.equal(undefined);
+        expect(bar.value()).to.equal(123);
     });
 
     it('should set the internal value and return the new value', () => {
-        const value = val('foo');
+        const value = store('foo');
         
-        expect(value.get()).to.equal('foo');
+        expect(value.value()).to.equal('foo');
 
         expect(value.set('bar')).to.equal('bar');
-        expect(value.get()).to.equal('bar');
+        expect(value.value()).to.equal('bar');
 
         expect(value.set('baz')).to.equal('baz');
-        expect(value.get()).to.equal('baz');
+        expect(value.value()).to.equal('baz');
     });
 
     it('should update the internal value with a callback function and return the new value', () => {
-        const value = val(1);
+        const value = store(1);
         
-        expect(value.get()).to.equal(1);
+        expect(value.value()).to.equal(1);
 
         expect(value.update((val) => val + 10)).to.equal(11);
-        expect(value.get()).to.equal(11);
+        expect(value.value()).to.equal(11);
 
         expect(value.update((val) => val + 100)).to.equal(111);
-        expect(value.get()).to.equal(111);
+        expect(value.value()).to.equal(111);
     });
 
     it('should call a subscriber immediately when added', () => {
-        const value = val();
+        const value = store();
         
         const spy = sinon.spy();
         value.subscribe(spy);
@@ -45,7 +45,7 @@ describe('val', () => {
     });
 
     it('should call subscribers when the internal value changes', () => {
-        const value = val(10);
+        const value = store(10);
         
         const spy = sinon.spy();
         value.subscribe(spy);
@@ -66,10 +66,10 @@ describe('val', () => {
     });
 
     it('should support destructuring methods', () => {
-        const value = val(10);
-        const { get, set, update, subscribe } = value;
+        const foo = store(10);
+        const { value, set, update, subscribe } = foo;
 
-        expect(get()).to.equal(10);
+        expect(value()).to.equal(10);
         
         const spy = sinon.spy();
         subscribe(spy);
@@ -79,13 +79,13 @@ describe('val', () => {
         expect(spy.args[0][1]).to.equal(undefined);
 
         expect(set(20)).to.equal(20);
-        expect(get()).to.equal(20);
+        expect(value()).to.equal(20);
         expect(spy.callCount).to.equal(2);
         expect(spy.args[1][0]).to.equal(20);
         expect(spy.args[1][1]).to.equal(10);
 
         expect(update((val) => val + 100)).to.equal(120);
-        expect(get()).to.equal(120);
+        expect(value()).to.equal(120);
         expect(spy.callCount).to.equal(3);
         expect(spy.args[2][0]).to.equal(120);
         expect(spy.args[2][1]).to.equal(20);

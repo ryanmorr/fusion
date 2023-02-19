@@ -1,25 +1,25 @@
-import { val, derived } from '../../src/fusion';
+import { store, derived } from '../../src/fusion';
 
 describe('derived', () => {
     it('should get the internal value derived from a val dependency', () => {
-        const foo = val('foo');
+        const foo = store('foo');
         const computed = derived(foo, (val) => val + 'bar');
 
-        expect(computed.get()).to.equal('foobar');
+        expect(computed.value()).to.equal('foobar');
     });
 
     it('should get the internal value derived from multiple val dependencies', () => {
-        const foo = val('foo');
-        const bar = val('bar');
-        const baz = val('baz');
+        const foo = store('foo');
+        const bar = store('bar');
+        const baz = store('baz');
         const computed = derived(foo, bar, baz, (foo, bar, baz) => foo + bar + baz);
 
-        expect(computed.get()).to.equal('foobarbaz');
+        expect(computed.value()).to.equal('foobarbaz');
     });
 
     it('should not be able to explicitly set the internal value', () => {
-        const foo = val('foo');
-        const bar = val('bar');
+        const foo = store('foo');
+        const bar = store('bar');
         const computed = derived(foo, bar, (foo, bar) => foo + bar);
 
         expect(computed.set).to.equal(undefined);
@@ -27,22 +27,22 @@ describe('derived', () => {
     });
 
     it('should automatically update the internal value if a dependency changes', () => {
-        const firstName = val('John');
-        const lastName = val('Doe');
+        const firstName = store('John');
+        const lastName = store('Doe');
         const fullName = derived(firstName, lastName, (firstName, lastName) => `${firstName} ${lastName}`);
 
-        expect(fullName.get()).to.equal('John Doe');
+        expect(fullName.value()).to.equal('John Doe');
 
         firstName.set('Jane');
-        expect(fullName.get()).to.equal('Jane Doe');
+        expect(fullName.value()).to.equal('Jane Doe');
 
         lastName.set('Jones');
-        expect(fullName.get()).to.equal('Jane Jones');
+        expect(fullName.value()).to.equal('Jane Jones');
     });
 
     it('should call subscribers immediately and when the internal value changes', () => {
-        const foo = val(10);
-        const bar = val(20);
+        const foo = store(10);
+        const bar = store(20);
         const computed = derived(foo, bar, (foo, bar) => foo + bar);
         
         const spy = sinon.spy();
@@ -64,9 +64,9 @@ describe('derived', () => {
     });
 
     it('should support derived dependencies', () => {
-        const foo = val('a');
-        const bar = val('b');
-        const baz = val('c');
+        const foo = store('a');
+        const bar = store('b');
+        const baz = store('c');
 
         const fooBar = derived(foo, bar, (a, b) => a + b);
         const value = derived(fooBar, baz, (a, b) => a + b);
@@ -79,20 +79,20 @@ describe('derived', () => {
 
         expect(fooBarSpy.callCount).to.equal(1);
         expect(valueSpy.callCount).to.equal(1);
-        expect(value.get()).to.equal('abc');
+        expect(value.value()).to.equal('abc');
 
         foo.set('x');
-        expect(value.get()).to.equal('xbc');
+        expect(value.value()).to.equal('xbc');
         expect(fooBarSpy.callCount).to.equal(2);
         expect(valueSpy.callCount).to.equal(2);
 
         bar.set('y');
-        expect(value.get()).to.equal('xyc');
+        expect(value.value()).to.equal('xyc');
         expect(fooBarSpy.callCount).to.equal(3);
         expect(valueSpy.callCount).to.equal(3);
 
         baz.set('z');
-        expect(value.get()).to.equal('xyz');
+        expect(value.value()).to.equal('xyz');
         expect(fooBarSpy.callCount).to.equal(3);
         expect(valueSpy.callCount).to.equal(4);
     });

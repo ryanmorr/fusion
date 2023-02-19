@@ -26,7 +26,7 @@ describe('media', () => {
 
         const mq = media('(max-width: 750px)');
 
-        expect(mq.get()).to.equal(false);
+        expect(mq.value()).to.equal(false);
     });
 
     it('should call subscribes when the status of the media query changes', async () => {

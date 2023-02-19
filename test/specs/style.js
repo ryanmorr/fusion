@@ -1,4 +1,4 @@
-import { val, derived, style } from '../../src/fusion';
+import { store, derived, style } from '../../src/fusion';
 import { createElement, getStyle } from '../util';
 
 describe('style', () => {
@@ -57,7 +57,7 @@ describe('style', () => {
     });
 
     it('should interpolate a store as a CSS variable', () => {
-        const width = val('22px');
+        const width = store('22px');
 
         const className = style`
             width: ${width};
@@ -69,7 +69,7 @@ describe('style', () => {
     });
 
     it('should update a CSS variable when a store is updated', () => {
-        const width = val('2px');
+        const width = store('2px');
 
         const className = style`
             width: ${width};
@@ -85,7 +85,7 @@ describe('style', () => {
     });
 
     it('should support multiple interpolations of the same store', () => {
-        const size = val('7px');
+        const size = store('7px');
 
         const className = style`
             width: ${size};
@@ -118,8 +118,8 @@ describe('style', () => {
     });
 
     it('should not set a CSS variable if a store contains null or undefined', () => {
-        const margin = val(undefined);
-        const padding = val(null);
+        const margin = store(undefined);
+        const padding = store(null);
 
         const className = style`
             margin: ${margin};
@@ -166,7 +166,7 @@ describe('style', () => {
     });
 
     it('should unset a CSS variable with null or undefined', () => {
-        const height = val('8px');
+        const height = store('8px');
 
         const className = style`
             height: ${height};
@@ -187,7 +187,7 @@ describe('style', () => {
     });
 
     it('should interpolate a store that contains a promise', async () => {
-        const width = val();
+        const width = store();
 
         const className = style`
             width: ${width};
@@ -205,8 +205,8 @@ describe('style', () => {
     });
 
     it('should interpolate a derived store', () => {
-        const x = val(5);
-        const y = val(10);
+        const x = store(5);
+        const y = store(10);
         const width = derived(x, y, (xVal, yVal) => `${xVal * yVal}px`);
 
         const className = style`
@@ -235,7 +235,7 @@ describe('style', () => {
     });
 
     it('should interpolate a function that returns a store', () => {
-        const width = val('7px');
+        const width = store('7px');
 
         const className = style`
             width: ${() => width};
@@ -279,7 +279,7 @@ describe('style', () => {
     });
 
     it('should interpolate a store that contains a function', () => {
-        const width = val(() => '19px');
+        const width = store(() => '19px');
 
         const className = style`
             width: ${() => width};
@@ -296,7 +296,7 @@ describe('style', () => {
 
     it('should interpolate a store that contains a promise that resolves with a function', async () => {
         const promise = Promise.resolve(() => '53px');
-        const width = val(promise);
+        const width = store(promise);
 
         const className = style`
             width: ${width};

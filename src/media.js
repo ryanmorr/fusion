@@ -13,6 +13,6 @@ export const media = createStore((get, set) => (query) => {
     return {
         [TYPE]: MEDIA,
         [CSS]: query,
-        get
+        value: get
     };
 });

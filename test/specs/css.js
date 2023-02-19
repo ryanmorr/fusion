@@ -1,4 +1,4 @@
-import { val, derived, css } from '../../src/fusion';
+import { store, derived, css } from '../../src/fusion';
 import { createElement, appendStyle, getStyle } from '../util';
 
 describe('css', () => {
@@ -87,7 +87,7 @@ describe('css', () => {
     });
 
     it('should interpolate a store as a CSS variable', () => {
-        const width = val('22px');
+        const width = store('22px');
 
         appendStyle(css`
             .foo {
@@ -101,7 +101,7 @@ describe('css', () => {
     });
 
     it('should update a CSS variable when a store is updated', () => {
-        const width = val('7px');
+        const width = store('7px');
 
         appendStyle(css`
             .foo {
@@ -119,7 +119,7 @@ describe('css', () => {
     });
 
     it('should support multiple interpolations of the same store', () => {
-        const width = val('7px');
+        const width = store('7px');
 
         appendStyle(css`
             .foo {
@@ -160,8 +160,8 @@ describe('css', () => {
     });
 
     it('should not set a CSS variable if a store contains null or undefined', () => {
-        const margin = val(undefined);
-        const padding = val(null);
+        const margin = store(undefined);
+        const padding = store(null);
 
         appendStyle(css`
             .foo {
@@ -214,7 +214,7 @@ describe('css', () => {
     });
 
     it('should unset a CSS variable with null or undefined', () => {
-        const height = val('5px');
+        const height = store('5px');
 
         appendStyle(css`
             .foo {
@@ -237,7 +237,7 @@ describe('css', () => {
     });
 
     it('should interpolate a store that contains a promise', async () => {
-        const width = val();
+        const width = store();
 
         appendStyle(css`
             .foo {
@@ -257,8 +257,8 @@ describe('css', () => {
     });
 
     it('should interpolate a derived store', () => {
-        const x = val(5);
-        const y = val(10);
+        const x = store(5);
+        const y = store(10);
         const width = derived(x, y, (xVal, yVal) => `${xVal * yVal}px`);
 
         appendStyle(css`
@@ -291,7 +291,7 @@ describe('css', () => {
     });
 
     it('should interpolate a function that returns a store', () => {
-        const width = val('17px');
+        const width = store('17px');
 
         appendStyle(css`
             .foo {
@@ -341,7 +341,7 @@ describe('css', () => {
     });
 
     it('should interpolate a store that contains a function', () => {
-        const width = val(() => '5px');
+        const width = store(() => '5px');
 
         appendStyle(css`
             .foo {
@@ -360,7 +360,7 @@ describe('css', () => {
 
     it('should interpolate a store that contains a promise that resolves with a function', async () => {
         const promise = Promise.resolve(() => '19px');
-        const width = val(promise);
+        const width = store(promise);
 
         appendStyle(css`
             .foo {
@@ -498,7 +498,7 @@ describe('css', () => {
 
     it('should support shadow DOM', () => {
         let element;
-        const width = val('128px');
+        const width = store('128px');
 
         customElements.define('custom-element-2', class CustomElement2 extends HTMLElement {
             constructor() {
