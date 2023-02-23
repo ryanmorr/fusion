@@ -96,4 +96,63 @@ describe('derived', () => {
         expect(fooBarSpy.callCount).to.equal(3);
         expect(valueSpy.callCount).to.equal(4);
     });
+
+    it('should support async derived stores', async () => {
+        const foo = store(5);
+        const bar = store(10);
+        const computed = derived(foo, bar, (a, b, set) => {
+            setTimeout(() => set(a + b), 10);
+        });
+    
+        expect(computed.value()).to.equal(undefined);
+    
+        const spy = sinon.spy();
+        computed.subscribe(spy);
+    
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal(undefined);
+        expect(spy.args[0][1]).to.equal(undefined);
+    
+        await new Promise((resolve) => setTimeout(resolve, 20));
+
+        expect(computed.value()).to.equal(15);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal(15);
+        expect(spy.args[1][1]).to.equal(undefined);
+        
+        foo.set(100);
+        expect(computed.value()).to.equal(15);
+
+        await new Promise((resolve) => setTimeout(resolve, 20));
+
+        expect(computed.value()).to.equal(110);
+        expect(spy.callCount).to.equal(3);
+        expect(spy.args[2][0]).to.equal(110);
+        expect(spy.args[2][1]).to.equal(15);  
+    });
+
+    it('should support multiple calls to set in async derived stores', async () => {
+        const foo = store(50);
+        const bar = store(20);
+        const computed = derived(foo, bar, (a, b, set) => {
+            set(0);
+            setTimeout(() => set(a + b), 10);
+        });
+    
+        expect(computed.value()).to.equal(0);
+    
+        const spy = sinon.spy();
+        computed.subscribe(spy);
+    
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal(0);
+        expect(spy.args[0][1]).to.equal(undefined);
+    
+        await new Promise((resolve) => setTimeout(resolve, 20));
+
+        expect(computed.value()).to.equal(70);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal(70);
+        expect(spy.args[1][1]).to.equal(0);
+    });
 });
