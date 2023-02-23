@@ -9,8 +9,10 @@ export const store = createStore((get, set) => (value) => {
     return {
         value: get,
         set: setValue,
-        update(callback) {
-            return setValue(callback(get()));
-        }
+        update: (callback) => setValue(callback(get())),
+        then: (resolve) => resolve(get()),
+        toString: () => String(get()),
+        toJSON: get,
+        valueOf: get
     };
 });

@@ -155,4 +155,14 @@ describe('derived', () => {
         expect(spy.args[1][0]).to.equal(70);
         expect(spy.args[1][1]).to.equal(0);
     });
+
+    it('should support implicit type conversions', async () => {
+        const foo = store(10);
+        const bar = derived(foo, (val) => val + 10);
+        
+        expect(bar.toString()).to.equal('20');
+        expect(bar.valueOf()).to.equal(20);
+        expect(bar.toJSON()).to.equal(20);
+        expect(await bar).to.equal(20);
+    });
 });

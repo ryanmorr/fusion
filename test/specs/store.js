@@ -90,4 +90,13 @@ describe('store', () => {
         expect(spy.args[2][0]).to.equal(120);
         expect(spy.args[2][1]).to.equal(20);
     });
+
+    it('should support implicit type conversions', async () => {
+        const foo = store(10);
+        
+        expect(foo.toString()).to.equal('10');
+        expect(foo.valueOf()).to.equal(10);
+        expect(foo.toJSON()).to.equal(10);
+        expect(await foo).to.equal(10);
+    });
 });

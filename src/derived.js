@@ -18,6 +18,10 @@ export const derived = createStore((get, set) => (...deps) => {
     initialized = true;
     sync();
     return {
-        value: get
+        value: get,
+        then: (resolve) => resolve(get()),
+        toString: () => String(get()),
+        toJSON: get,
+        valueOf: get
     };
 });
