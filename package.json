@@ -1,6 +1,6 @@
 {
   "name": "@ryanmorr/fusion",
-  "description": "Reactive CSS",
+  "description": "Reactive CSS-in-JS",
   "version": "0.2.2",
   "license": "Unlicense",
   "author": "Ryan Morr",
