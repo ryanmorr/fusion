@@ -32,6 +32,9 @@ function resolveValue(value) {
     if (isPromise(value)) {
         return `var(${getProp(value)})`;
     }
+    if (value && value.nodeType === 1 && value.nodeName.toUpperCase() === 'STYLE') {
+        return value.textContent;
+    }
     return value;
 }
 

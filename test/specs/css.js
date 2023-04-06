@@ -522,4 +522,71 @@ describe('css', () => {
 
         expect(getStyle(element, 'width')).to.equal('27px');
     });
+
+    it('should interpolate a `css` stylesheet into another `css` stylesheet', () => {
+        appendStyle(css`
+            .foo {
+                width: 66px;
+            }
+    
+            ${css`
+                .bar {
+                    width: 33px;
+                }
+            `}
+        `);
+        
+        const element1 = createElement('div', {className: 'foo'});
+        const element2 = createElement('div', {className: 'bar'});
+    
+        expect(getStyle(element1, 'width')).to.equal('66px');
+        expect(getStyle(element2, 'width')).to.equal('33px');
+    });
+    
+    it('should support interpolating any style element into a `css` stylesheet', () => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .bar {
+                width: 20px;
+            }
+        `;
+    
+        appendStyle(css`
+            .foo {
+                width: 84px;
+            }
+    
+            ${style}
+        `);
+        
+        const element1 = createElement('div', {className: 'foo'});
+        const element2 = createElement('div', {className: 'bar'});
+    
+        expect(getStyle(element1, 'width')).to.equal('84px');
+        expect(getStyle(element2, 'width')).to.equal('20px');
+    });
+    
+    it('should support interpolating css into nested css', () => {
+        appendStyle(css`
+            .foo {
+                width: 66px;
+
+                ${css`
+                    .bar {
+                        width: 33px;
+                    }
+                `}
+            }
+        `);
+        
+        const element1 = createElement('div', {className: 'foo'});
+        const element2 = createElement('div', {className: 'bar'});
+    
+        expect(getStyle(element1, 'width')).to.equal('66px');
+        expect(getStyle(element2, 'width')).to.not.equal('33px');
+
+        element1.appendChild(element2);
+
+        expect(getStyle(element2, 'width')).to.equal('33px');
+    });
 });
