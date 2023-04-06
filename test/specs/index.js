@@ -1,5 +1,3 @@
-import './store';
-import './derived';
 import './nested-css';
 import './css';
 import './style';

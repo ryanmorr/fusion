@@ -1,4 +1,4 @@
-import { TYPE, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
+import { TYPE, NAME, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
 import { convert } from './css-parser';
 import { getProp } from './prop';
 import { uuid, isStore, isPromise } from './util';
@@ -19,7 +19,7 @@ function resolveValue(value) {
             return `@media ${value[CSS]}`;
         }
         if (value[TYPE] === KEYFRAMES) {
-            const name = value.toString();
+            const name = value[NAME];
             if (!(name in keyframes)) {
                 keyframes[name] = `@keyframes ${name} { ${value[CSS]} }`;
             }

@@ -1,4 +1,4 @@
-import createStore from '@ryanmorr/create-store';
+import defineStore from '@ryanmorr/define-store';
 import { TYPE, QUERY, CSS } from './constants';
 
 let observer = null;
@@ -30,7 +30,7 @@ function checkSelectors() {
     });
 }
 
-export const query = createStore((get, set) => (selector) => {
+export const query = defineStore((get, set) => (selector) => {
     startObserver();
     listeners.push({selector, get, set});
     set(find(selector), []);

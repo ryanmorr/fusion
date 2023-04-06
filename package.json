@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@ryanmorr/amble": "^0.1.2",
-    "@ryanmorr/create-store": "^0.1.0"
+    "@ryanmorr/define-store": "^1.0.0",
+    "@ryanmorr/isotope": "^2.0.0"
   }
 }

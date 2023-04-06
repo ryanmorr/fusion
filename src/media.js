@@ -1,7 +1,7 @@
-import createStore from '@ryanmorr/create-store';
+import defineStore from '@ryanmorr/define-store';
 import { TYPE, MEDIA, CSS } from './constants';
 
-export const media = createStore((get, set) => (query) => {
+export const media = defineStore((get, set) => (query) => {
     const mq = matchMedia(query);
     const setValue = () => set(mq.matches);
     if ('addEventListener' in mq) {

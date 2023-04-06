@@ -1,5 +1,5 @@
-import createStore from '@ryanmorr/create-store';
-import { TYPE, KEYFRAMES, CSS } from './constants';
+import defineStore from '@ryanmorr/define-store';
+import { TYPE, NAME, KEYFRAMES, CSS } from './constants';
 import { getProp } from './prop';
 import { isStore, uuid } from './util';
 
@@ -47,7 +47,7 @@ function resolveValue(value) {
     return value;
 }
 
-export const keyframes = createStore((get, set) => (strings, ...values) => {
+export const keyframes = defineStore((get, set) => (strings, ...values) => {
     startObserver();
     const name = 'animation-' + uuid();
     const frames = strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
@@ -56,7 +56,7 @@ export const keyframes = createStore((get, set) => (strings, ...values) => {
     return {
         [TYPE]: KEYFRAMES,
         [CSS]: frames,
-        toString: () => name,
+        [NAME]: name,
         value: get
     };
 });
