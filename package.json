@@ -7,13 +7,26 @@
   "homepage": "https://github.com/ryanmorr/fusion",
   "repository": "github:ryanmorr/fusion",
   "bugs": "https://github.com/ryanmorr/fusion/issues",
-  "publishConfig": {
-    "access": "public"
-  },
+  "keywords": [
+    "javascript",
+    "css",
+    "css-in-js",
+    "reactive"
+  ],
   "type": "module",
-  "main": "dist/fusion.cjs.js",
-  "module": "dist/fusion.esm.js",
-  "browser": "dist/fusion.umd.js",
+  "main": "dist/cjs/fusion.js",
+  "module": "dist/esm/fusion.js",
+  "browser": "dist/umd/fusion.js",
+  "exports": {
+    ".": {
+      "browser": "./dist/umd/fusion.js",
+      "import": "./dist/esm/fusion.js",
+      "require": "./dist/cjs/fusion.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint src/** test/specs/**",
     "test": "karma start karma.config.cjs",
@@ -34,6 +47,7 @@
     "karma-sinon": "^1.0.5",
     "mocha": "^10.2.0",
     "rollup": "^3.14.0",
+    "rollup-plugin-generate-package-json": "^3.2.0",
     "sinon": "^15.0.1",
     "terser": "^5.16.3"
   },
