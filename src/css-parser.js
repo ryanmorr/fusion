@@ -1,59 +1,30 @@
-const PROP = 1;
-const VALUE = 2;
-const SELECTOR_GROUP_RE = /(.+,.+)/;
+import { walk } from '@ryanmorr/amble';
+
+const SELECTOR_GROUP_RE = /([\s\S]+,[\s\S]+)/m;
 
 function parse(css) {
     const ast = [{children: []}];
-    let mode = PROP;
-    let buffer = '';
     let depth = 0;
-    let quote = '';
-    let current = '';
-    for (let i = 0, len = css.length; i < len; i++) {
-        const char = css[i];
-        if (char == '\n' || ((char == ';' || char == '}') && !quote)) {
-            if (current) {
-                ast[depth].rules += current + buffer.trim() + quote + ';';
-            }
-            if (char == '}') {
-                ast[--depth].children.push(ast.pop());
-            }
-            mode = PROP;
-            current = buffer = quote = '';
-        } else if (char == '{' && !quote) {
+    walk(css, (style, char) => {
+        if (char == '{') {
             ast[++depth] = {
-                selector: (current + ' ' + buffer).trim(),
+                selector: style,
                 rules: '',
                 children: []
             };
-            mode = PROP;
-            current = buffer = '';
-        } else if (mode == PROP) {
-            if (char == ' ') {
-                if ((current = buffer.trim())) {
-                    mode = VALUE;
-                    buffer = '';
-                }
-            } else {
-                buffer += char;
-            }
-        } else if (mode == VALUE) {
-            if (quote) {
-                if (char == quote && css[i - 1] != '\\') {
-                    quote = '';
-                }
-            } else if (char == "'" || char == '"') { // eslint-disable-line quotes
-                quote = char;
-            }
-            buffer += char;
+        } else if (char == '}') {
+            ast[depth].rules += style;
+            ast[--depth].children.push(ast.pop());
+        } else if (char == ';') {
+            ast[depth].rules += style + char;
         }
-    }
+    });
     return ast[0].children;
 }
 
 function build(ast, parent) {
     return ast.reduce((css, block) => {
-        let selector = block.selector;
+        let selector = block.selector.trim();
         if (selector[0] === '@') {
             css += selector + '{';
             if (block.children.length > 0) {
@@ -77,5 +48,5 @@ function build(ast, parent) {
 }
 
 export function convert(css) {
-    return build(parse(css.trim()));
+    return build(parse(css));
 }

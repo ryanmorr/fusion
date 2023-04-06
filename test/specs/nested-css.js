@@ -36,7 +36,7 @@ describe('nested-css', () => {
                     }
                 }
             }
-        `)).to.equal('.foo{color:black;}@media (max-width: 480px){.foo{color:green;}}');
+        `)).to.equal('.foo{color:black;}@media (max-width:480px){.foo{color:green;}}');
     });
 
     it('should support nested CSS with multiple parents', () => {
@@ -80,7 +80,7 @@ describe('nested-css', () => {
                     width: 20px;
                 }
             }
-        `)).to.equal(':is(#foo > [attr=val]:empty + div.foo.bar, :not(span[attr]:contains("foo"))){width:10px;}:is(#foo > [attr=val]:empty + div.foo.bar, :not(span[attr]:contains("foo"))) .bar::before{width:20px;}');
+        `)).to.equal(':is(#foo > [attr=val]:empty + div.foo.bar,:not(span[attr]:contains("foo"))){width:10px;}:is(#foo > [attr=val]:empty + div.foo.bar,:not(span[attr]:contains("foo"))) .bar::before{width:20px;}');
     });
 
     it('should support nested CSS without mangling properties', () => {

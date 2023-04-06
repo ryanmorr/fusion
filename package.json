@@ -38,6 +38,7 @@
     "terser": "^5.16.3"
   },
   "dependencies": {
+    "@ryanmorr/amble": "^0.1.2",
     "@ryanmorr/create-store": "^0.1.0"
   }
 }
