@@ -91,16 +91,16 @@ describe('media', () => {
         const smallScreen = media('(max-width: 750px)');
 
         const className = style`
-            width: 10px
+            width: 10px;
 
             ${smallScreen} {
                 & {
-                    width: 20px
+                    width: 20px;
                 }
             }
         `;
         
-        let css;
+        let css = '';
         const styles = document.querySelectorAll('style');
         Array.from(styles).forEach((style) => css += style.textContent);
 
