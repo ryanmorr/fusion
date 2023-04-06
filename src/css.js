@@ -1,11 +1,10 @@
-import { TYPE, NAME, MEDIA, QUERY, KEYFRAMES, CSS } from './constants';
+import { TYPE, MEDIA, QUERY, CSS } from './constants';
 import { convert } from './css-parser';
 import { getProp } from './prop';
 import { uuid, isStore, isPromise } from './util';
 
 let stylesheet;
 const CLASS_PREFIX = 'fusion-';
-const keyframes = {};
 
 function resolveValue(value) {
     if (typeof value === 'function' && !isStore(value)) {
@@ -17,13 +16,6 @@ function resolveValue(value) {
         }
         if (value[TYPE] === MEDIA) {
             return `@media ${value[CSS]}`;
-        }
-        if (value[TYPE] === KEYFRAMES) {
-            const name = value[NAME];
-            if (!(name in keyframes)) {
-                keyframes[name] = `@keyframes ${name} { ${value[CSS]} }`;
-            }
-            return name;
         }
         if (value[TYPE] === QUERY) {
             return value[CSS];
@@ -39,15 +31,7 @@ function resolveValue(value) {
 }
 
 function process(strings, values) {
-    let styles = strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
-    Object.keys(keyframes).forEach((key) => {
-        const value = keyframes[key];
-        if (typeof value === 'string') {
-            styles += ' ' + value;
-            keyframes[key] = true;
-        }
-    });
-    return styles;
+    return strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
 }
 
 export function style(strings, ...values) {
