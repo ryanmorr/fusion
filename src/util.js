@@ -7,7 +7,7 @@ export function isStore(obj) {
 }
 
 export function isPromise(obj) {
-    return Promise.resolve(obj) === obj;
+    return obj && typeof obj.then === 'function';
 }
 
 export function compileTaggedTemplate(strings, values, callback) {
