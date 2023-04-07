@@ -1,10 +1,60 @@
+import { walk } from '@ryanmorr/amble';
 import { TYPE, MEDIA, QUERY, CSS } from './constants';
-import { convert } from './css-parser';
 import { getProp } from './prop';
 import { uuid, isStore, isPromise } from './util';
 
 let stylesheet;
 const CLASS_PREFIX = 'fusion-';
+const SELECTOR_GROUP_RE = /([\s\S]+,[\s\S]+)/m;
+
+function parseNestedCSS(css) {
+    const ast = [{children: []}];
+    let depth = 0;
+    walk(css, (style, char) => {
+        if (char == '{') {
+            ast[++depth] = {
+                selector: style,
+                rules: '',
+                children: []
+            };
+        } else if (char == '}') {
+            ast[depth].rules += style;
+            ast[--depth].children.push(ast.pop());
+        } else if (char == ';') {
+            ast[depth].rules += style + char;
+        }
+    });
+    return ast[0].children;
+}
+
+function buildCSS(ast, parent) {
+    return ast.reduce((css, block) => {
+        let selector = block.selector.trim();
+        if (selector[0] === '@') {
+            css += selector + '{';
+            if (block.children.length > 0) {
+                css += buildCSS(block.children, parent) + '}';
+            }
+        } else {
+            if (parent && selector[0] === '&') {
+                selector = parent + selector.substring(1).replace(SELECTOR_GROUP_RE, ':is($1)');
+            } else if (parent) {
+                selector = parent + ' ' + selector.replace(SELECTOR_GROUP_RE, ':is($1)');
+            } else {
+                selector = selector.replace(SELECTOR_GROUP_RE, ':is($1)');
+            }
+            css += selector + '{' + block.rules + '}';
+            if (block.children.length > 0) {
+                css += buildCSS(block.children, selector);
+            }
+        }
+        return css;
+    }, '');
+}
+
+function compileCSS(css) {
+    return buildCSS(parseNestedCSS(css));
+}
 
 function resolveValue(value) {
     if (typeof value === 'function' && !isStore(value)) {
@@ -30,24 +80,28 @@ function resolveValue(value) {
     return value;
 }
 
-function process(strings, values) {
+function processCSS(strings, values) {
     return strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
 }
 
-export function style(strings, ...values) {
+export function appendCSS(css) {
     if (!stylesheet) {
         stylesheet = document.createElement('style');
         document.head.appendChild(stylesheet);
     }
-    const styles = process(strings, values);
+    stylesheet.textContent += css;
+}
+
+export function style(strings, ...values) {
+    const styles = processCSS(strings, values);
     const className = CLASS_PREFIX + uuid();
-    stylesheet.textContent += convert(`.${className} { ${styles} }`);
+    appendCSS(compileCSS(`.${className} { ${styles} }`));
     return className;
 }
 
 export function css(strings, ...values) {
-    const styles = process(strings, values);
+    const styles = processCSS(strings, values);
     const style = document.createElement('style');
-    style.textContent += convert(styles);
+    style.textContent += compileCSS(styles);
     return style;
 }

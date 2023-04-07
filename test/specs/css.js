@@ -22,20 +22,6 @@ describe('css', () => {
         style.remove();
     });
 
-    it('should support nested CSS', () => {
-        const style = css`
-            .foo {
-                color: red;
-        
-                .bar {
-                    color: blue;
-                }
-            }
-        `;
-
-        expect(style.innerHTML).to.equal('.foo{color:red;}.foo .bar{color:blue;}');
-    });
-
     it('should support custom elements', () => {
         let element;
 
@@ -564,6 +550,121 @@ describe('css', () => {
     
         expect(getStyle(element1, 'width')).to.equal('84px');
         expect(getStyle(element2, 'width')).to.equal('20px');
+    });
+
+    it('should support nested CSS with a parent selector', () => {
+        const style = css`
+            .foo {
+                width: 12px;
+        
+                &::before {
+                    width: 27px;
+                }
+            }
+        `;
+
+        expect(style.textContent).to.equal('.foo{width:12px;}.foo::before{width:27px;}');
+    });
+
+    it('should support nested CSS with a child selector', () => {
+        const style = css`
+            .foo {
+                width: 4px;
+        
+                .bar {
+                    width: 15px;
+                }
+            }
+        `;
+        
+        expect(style.textContent).to.equal('.foo{width:4px;}.foo .bar{width:15px;}');
+    });
+
+    it('should support nested CSS with at-rules', () => {
+        const style = css`
+            .foo {
+                color: black;
+
+                @media (max-width: 480px) {
+                    & {
+                        color: green;
+                    }
+                }
+            }
+        `;
+        
+        expect(style.textContent).to.equal('.foo{color:black;}@media (max-width:480px){.foo{color:green;}}');
+    });
+
+    it('should support nested CSS with multiple parents', () => {
+        const style = css`
+            .foo, .bar {
+                width: 10px;
+        
+                &.baz {
+                    width: 20px;
+                }
+            }
+        `;
+        
+        expect(style.textContent).to.equal(':is(.foo, .bar){width:10px;}:is(.foo, .bar).baz{width:20px;}');
+    });
+
+    it('should support deeply nested CSS', () => {
+        const style = css`
+            .foo {
+                width: 10px;
+        
+                .bar {
+                    width: 20px;
+
+                    .baz {
+                        width: 30px;
+
+                        .qux {
+                            width: 40px;
+                        }
+                    }
+                }
+            }
+        `;
+        
+        expect(style.textContent).to.equal('.foo{width:10px;}.foo .bar{width:20px;}.foo .bar .baz{width:30px;}.foo .bar .baz .qux{width:40px;}');
+    });
+
+    it('should support nested CSS with complex selectors', () => {
+        const style = css`
+            #foo > [attr=val]:empty + div.foo.bar, :not(span[attr]:contains("foo")) {
+                width: 10px;
+        
+                .bar::before {
+                    width: 20px;
+                }
+            }
+        `;
+        
+        expect(style.textContent).to.equal(':is(#foo > [attr=val]:empty + div.foo.bar,:not(span[attr]:contains("foo"))){width:10px;}:is(#foo > [attr=val]:empty + div.foo.bar,:not(span[attr]:contains("foo"))) .bar::before{width:20px;}');
+    });
+
+    it('should support nested CSS without mangling properties', () => {
+        const style = css`
+            .foo {
+                --main-bg-color: brown;
+                background-color: var(--main-bg-color, hsla(30, 100%, 50%, .3));
+                color: rgba(255,0,0,.5);
+                transition: color .3s linear 1s, background .2s ease-in 1s, opacity .3s;
+                background-image: url("foo.jpg"), url("bar.jpg"), url('baz.jpg');
+        
+                .bar {
+                    font-family: Times, "Times New Roman", serif;
+                    width: calc(30% * 20em - 2vh / 2pt);
+                    box-shadow: inset 0 0 10px rgba(0,0,0,.5) !important;
+                    transform: rotate(-45deg) skew(20deg, 40deg) scale(2);
+                }                    
+            }
+        `;
+        
+        expect(style.textContent).to.equal(`.foo{--main-bg-color:brown;background-color:var(--main-bg-color, hsla(30, 100%, 50%, .3));color:rgba(255,0,0,.5);transition:color .3s linear 1s, background .2s ease-in 1s, opacity .3s;background-image:url("foo.jpg"), url("bar.jpg"), url('baz.jpg');}.foo .bar{font-family:Times, "Times New Roman", serif;width:calc(30% * 20em - 2vh / 2pt);box-shadow:inset 0 0 10px rgba(0,0,0,.5) !important;transform:rotate(-45deg) skew(20deg, 40deg) scale(2);}`); // eslint-disable-line quotes
     });
     
     it('should support interpolating css into nested css', () => {

@@ -1,4 +1,3 @@
-import './nested-css';
 import './css';
 import './style';
 import './fallback';
