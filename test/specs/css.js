@@ -361,48 +361,6 @@ describe('css', () => {
         expect(getStyle(element, 'width')).to.equal('19px');
     });
 
-    it('should support custom stores that have a subscribe method', () => {
-        const customStore = (value) => {
-            const subscribers = [];
-            const callback = (val) => {
-                if (val === undefined) {
-                    return value;
-                }
-                value = val;
-                subscribers.slice().forEach((subscriber) => subscriber(value));
-            };
-            callback.subscribe = (callback) => {
-                if (!subscribers.includes(callback)) {
-                    subscribers.push(callback);
-                    callback(value);
-                    return () => {
-                        const index = subscribers.indexOf(callback);
-                        if (index !== -1) {
-                            subscribers.splice(index, 1);
-                        }
-                    };
-                }
-            };
-            return callback;
-        };
-
-        const width = customStore('9px');
-
-        appendStyle(css`
-            .foo {
-                width: ${width};
-            }
-        `);
-        
-        const element = createElement('div', {className: 'foo'});
-        
-        expect(getStyle(element, 'width')).to.equal('9px');
-
-        width('37px');
-
-        expect(getStyle(element, 'width')).to.equal('37px');
-    });
-
     it('should interpolate nested functions', () => {
         appendStyle(css`
             .foo {

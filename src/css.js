@@ -56,7 +56,7 @@ function compileCSS(css) {
 }
 
 function resolveValue(value) {
-    if (typeof value === 'function' && !isStore(value)) {
+    if (typeof value === 'function') {
         return resolveValue(value());
     }
     if (isStore(value)) {
