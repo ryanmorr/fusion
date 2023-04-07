@@ -1,5 +1,4 @@
 import defineStore from '@ryanmorr/define-store';
-import { TYPE, QUERY, CSS } from './constants';
 
 let observer = null;
 const listeners = [];
@@ -35,8 +34,7 @@ export const query = defineStore((get, set) => (selector) => {
     listeners.push({selector, get, set});
     set(find(selector), []);
     return {
-        [TYPE]: QUERY,
-        [CSS]: selector,
+        css: selector,
         value: get
     };
 });

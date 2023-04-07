@@ -1,5 +1,4 @@
 import { walk } from '@ryanmorr/amble';
-import { TYPE, MEDIA, QUERY, CSS } from './constants';
 import { getProp } from './prop';
 import { uuid, isStore, isPromise } from './util';
 
@@ -61,20 +60,19 @@ function resolveValue(value) {
         return resolveValue(value());
     }
     if (isStore(value)) {
-        if (!(TYPE in value)) {
-            return `var(${getProp(value)})`;
+        const css = value.css;
+        if (css) {
+            if (css.startsWith('--')) {
+                return `var(${css})`;
+            }
+            return css;
         }
-        if (value[TYPE] === MEDIA) {
-            return `@media ${value[CSS]}`;
-        }
-        if (value[TYPE] === QUERY) {
-            return value[CSS];
-        }
+        return `var(${getProp(value)})`;
     }
     if (isPromise(value)) {
         return `var(${getProp(value)})`;
     }
-    if (value && value.nodeType === 1 && value.nodeName.toUpperCase() === 'STYLE') {
+    if (value && value.nodeType === 1 && value.nodeName === 'STYLE') {
         return value.textContent;
     }
     return value;

@@ -1,5 +1,4 @@
 import defineStore from '@ryanmorr/define-store';
-import { TYPE, MEDIA, CSS } from './constants';
 
 export const media = defineStore((get, set) => (query) => {
     const mq = matchMedia(query);
@@ -11,8 +10,7 @@ export const media = defineStore((get, set) => (query) => {
     }
     setValue();
     return {
-        [TYPE]: MEDIA,
-        [CSS]: query,
+        css: '@media ' + query,
         value: get
     };
 });

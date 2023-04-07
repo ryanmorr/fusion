@@ -1,4 +1,3 @@
-import { CSS } from './constants';
 import { uuid, isStore, isPromise } from './util';
 
 const docStyle = document.documentElement.style;
@@ -19,8 +18,8 @@ function setProp(prop, value) {
 }
 
 export function getProp(obj) {
-    if (CSS in obj) {
-        return obj[CSS];
+    if ('css' in obj) {
+        return obj.css;
     }
     const prop = `--${uuid()}`;
     if (isStore(obj)) {
@@ -28,5 +27,5 @@ export function getProp(obj) {
     } else {
         obj.then((value) => setProp(prop, value));
     }
-    return obj[CSS] = prop;
+    return obj.css = prop;
 }
