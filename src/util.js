@@ -9,3 +9,7 @@ export function isStore(obj) {
 export function isPromise(obj) {
     return Promise.resolve(obj) === obj;
 }
+
+export function compileTaggedTemplate(strings, values, callback) {
+    return strings.raw.reduce((acc, str, i) => acc + (callback(values[i - 1])) + str);
+}

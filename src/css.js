@@ -1,6 +1,6 @@
 import { walk } from '@ryanmorr/amble';
 import { getProp } from './prop';
-import { uuid, isStore, isPromise } from './util';
+import { compileTaggedTemplate, uuid, isStore, isPromise } from './util';
 
 let stylesheet;
 const CLASS_PREFIX = 'fusion-';
@@ -78,10 +78,6 @@ function resolveValue(value) {
     return value;
 }
 
-function processCSS(strings, values) {
-    return strings.raw.reduce((acc, str, i) => acc + (resolveValue(values[i - 1])) + str);
-}
-
 export function appendCSS(css) {
     if (!stylesheet) {
         stylesheet = document.createElement('style');
@@ -91,14 +87,14 @@ export function appendCSS(css) {
 }
 
 export function style(strings, ...values) {
-    const styles = processCSS(strings, values);
+    const styles = compileTaggedTemplate(strings, values, resolveValue);
     const className = CLASS_PREFIX + uuid();
     appendCSS(compileCSS(`.${className} { ${styles} }`));
     return className;
 }
 
 export function css(strings, ...values) {
-    const styles = processCSS(strings, values);
+    const styles = compileTaggedTemplate(strings, values, resolveValue);
     const style = document.createElement('style');
     style.textContent += compileCSS(styles);
     return style;
