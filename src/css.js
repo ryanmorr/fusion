@@ -1,4 +1,6 @@
 import { walk } from '@ryanmorr/amble';
+import { MediaStore } from './media';
+import { QueryStore } from './query';
 import { getProp } from './prop';
 import { compileTaggedTemplate, uuid, isStore, isPromise } from './util';
 
@@ -60,12 +62,11 @@ function resolveValue(value) {
         return resolveValue(value());
     }
     if (isStore(value)) {
-        const css = value.css;
-        if (css) {
-            if (css.startsWith('--')) {
-                return `var(${css})`;
-            }
-            return css;
+        if (value instanceof MediaStore) {
+            return '@media ' + value.query;
+        }
+        if (value instanceof QueryStore) {
+            return value.selector;
         }
         return `var(${getProp(value)})`;
     }

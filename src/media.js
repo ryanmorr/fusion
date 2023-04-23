@@ -1,12 +1,19 @@
-import defineStore from '@ryanmorr/define-store';
+import { Store } from '@ryanmorr/isotope';
 
-export const media = defineStore((get, set) => (query) => {
-    const mq = matchMedia(query);
-    const setValue = () => set(mq.matches);
-    mq.addEventListener('change', setValue);
-    setValue();
-    return {
-        css: '@media ' + query,
-        value: get
-    };
-});
+export class MediaStore extends Store {
+    constructor(query) {
+        super();
+        this.mq = matchMedia(query);
+        this.mq.addEventListener('change', this.set.bind(this));
+        this.query = query;
+        this.set();
+    }
+
+    set() {
+        super.set(this.mq.matches);
+    }
+}
+
+export function media(query) {
+    return new MediaStore(query);
+}

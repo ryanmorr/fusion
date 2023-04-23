@@ -1,4 +1,4 @@
-import defineStore from '@ryanmorr/define-store';
+import { Store } from '@ryanmorr/isotope';
 
 let observer = null;
 const listeners = [];
@@ -7,34 +7,34 @@ function find(selector) {
     return Array.from(document.querySelectorAll(selector));
 }
 
-function startObserver() {
+function observe(store) {
     if (!observer) {
-        observer = new MutationObserver(checkSelectors);
+        observer = new MutationObserver(() => listeners.forEach((store) => store.set()));
         observer.observe(document.documentElement, {
             childList: true,
             subtree: true
         });
     }
+    listeners.push(store);
 }
 
-function checkSelectors() {
-    listeners.forEach(({selector, get, set}) => {
-        const prev = get();
-        const next = find(selector);
-        const added = next.filter((el) => !prev.includes(el));
-        const removed = prev.filter((el) => !next.includes(el));
-        if (added.length > 0 || removed.length > 0) {
-            set(next, prev);
+export class QueryStore extends Store {
+    constructor(selector) {
+        super(find(selector));
+        this.selector = selector;
+        observe(this);
+    }
+
+    set() {
+        const prev = this.value();
+        const next = find(this.selector);
+        if (next.filter((el) => !prev.includes(el)).length > 0 ||
+            prev.filter((el) => !next.includes(el)).length > 0) {
+            super.set(next);
         }
-    });
+    }
 }
 
-export const query = defineStore((get, set) => (selector) => {
-    startObserver();
-    listeners.push({selector, get, set});
-    set(find(selector), []);
-    return {
-        css: selector,
-        value: get
-    };
-});
+export function query(selector) {
+    return new QueryStore(selector);
+}

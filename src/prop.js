@@ -18,8 +18,8 @@ function setProp(prop, value) {
 }
 
 export function getProp(obj) {
-    if ('css' in obj) {
-        return obj.css;
+    if ('prop' in obj) {
+        return obj.prop;
     }
     const prop = `--${uuid()}`;
     if (isStore(obj)) {
@@ -27,5 +27,5 @@ export function getProp(obj) {
     } else {
         obj.then((value) => setProp(prop, value));
     }
-    return obj.css = prop;
+    return obj.prop = prop;
 }
