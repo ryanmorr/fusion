@@ -1,4 +1,4 @@
-import { uuid, isStore, isPromise } from './util';
+import { uuid, isStore, isPromise } from './utils';
 
 const docStyle = document.documentElement.style;
 

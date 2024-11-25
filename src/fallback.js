@@ -1,5 +1,5 @@
 import { getProp } from './prop';
-import { isStore, isPromise } from './util';
+import { isStore, isPromise } from './utils';
 
 export function fallback(...values) {
     let n = 1;

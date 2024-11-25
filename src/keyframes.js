@@ -1,6 +1,6 @@
 import { appendCSS } from './css';
 import { getProp } from './prop';
-import { compileTaggedTemplate, isStore, uuid } from './util';
+import { compileTaggedTemplate, isStore, uuid } from './utils';
 
 const KEYFRAME_PREFIX = 'fusion-animation-';
 

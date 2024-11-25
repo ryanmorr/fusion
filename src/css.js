@@ -2,7 +2,7 @@ import { walk } from '@ryanmorr/amble';
 import { MediaStore } from './media';
 import { QueryStore } from './query';
 import { getProp } from './prop';
-import { compileTaggedTemplate, uuid, isStore, isPromise } from './util';
+import { compileTaggedTemplate, uuid, isStore, isPromise } from './utils';
 
 let stylesheet;
 const CLASS_PREFIX = 'fusion-';
