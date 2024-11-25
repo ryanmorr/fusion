@@ -5,8 +5,11 @@
   "license": "Unlicense",
   "author": "Ryan Morr",
   "homepage": "https://github.com/ryanmorr/fusion",
-  "repository": "github:ryanmorr/fusion",
   "bugs": "https://github.com/ryanmorr/fusion/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanmorr/fusion.git"
+  },
   "keywords": [
     "javascript",
     "css",
