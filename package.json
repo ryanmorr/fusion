@@ -55,7 +55,7 @@
     "terser": "^5.16.3"
   },
   "dependencies": {
-    "@ryanmorr/amble": "^0.1.2",
-    "@ryanmorr/isotope": "^3.1.0"
+    "@ryanmorr/amble": "^0.2.0",
+    "@ryanmorr/isotope": "^3.2.1"
   }
 }
