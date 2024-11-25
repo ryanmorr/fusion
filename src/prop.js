@@ -1,5 +1,6 @@
 import { uuid, isStore, isPromise } from './utils';
 
+const props = new WeakMap();
 const docStyle = document.documentElement.style;
 
 function setProp(prop, value) {
@@ -18,8 +19,8 @@ function setProp(prop, value) {
 }
 
 export function getProp(obj) {
-    if ('prop' in obj) {
-        return obj.prop;
+    if (props.has(obj)) {
+        return props.get(obj);
     }
     const prop = `--${uuid()}`;
     if (isStore(obj)) {
@@ -27,5 +28,6 @@ export function getProp(obj) {
     } else {
         obj.then((value) => setProp(prop, value));
     }
-    return obj.prop = prop;
+    props.set(obj, prop);
+    return prop;
 }
