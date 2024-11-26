@@ -249,31 +249,17 @@ Add one or more fallback values for a CSS variable, supporting stores, promises,
 ```javascript
 import { fallback, store, css } from '@ryanmorr/fusion';
 
-const store = store();
-const promise = Promise.resolve('30px');
+const color = store();
 
-document.head.appendChild(css`
+// Because the store is unset, it defaults to the fallback value of blue
+const stylesheet = css`
     .foo {
-        width: ${fallback(store, promise, '--foo', '10px')};
+        color: ${fallback(color, 'blue')};
     }
-`);
+`;
 
-const element = document.querySelector('.foo');
-
-// The 3 previous values are unset, so precedence defaults to the right-most value
-getComputedStyle(element).getPropertyValue('width'); //=> "10px"
-
-// When the `--foo` CSS variable is set, it takes precedence
-document.documentElement.style.setProperty('--foo', '20px');
-getComputedStyle(element).getPropertyValue('width'); //=> "20px"
-
-// Precedence movies to the promise when it resolves
-await promise;
-getComputedStyle(element).getPropertyValue('width'); //=> "30px"
-
-// Finally, when the reactive store is set, it takes precedence over all the fallback values
-store.set('40px');
-getComputedStyle(element).getPropertyValue('width'); //=> "40px"
+// When the reactive store is set, it takes precedence
+color.set('red');
 ```
 
 ------
