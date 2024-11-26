@@ -14,7 +14,8 @@
     "javascript",
     "css",
     "css-in-js",
-    "reactive"
+    "reactive",
+    "signal"
   ],
   "type": "module",
   "main": "dist/cjs/fusion.js",
